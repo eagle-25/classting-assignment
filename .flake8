@@ -1,0 +1,5 @@
+[flake8]
+max-line-length = 130
+max-complexity = 10
+extend-ignore = E203, C901
+exclude = .git,__pycache__,.mypy_cache,.pytest_cache,dist

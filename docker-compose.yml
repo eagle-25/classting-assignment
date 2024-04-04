@@ -1,0 +1,17 @@
+version: '3.8'
+services:
+  dev:
+    image: classting-server
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "9001:9001"
+    volumes:
+      - .:/app
+    env_file:
+      - ./.envs/local_django_env
+    environment:
+      DJANGO_SETTINGS_MODULE: common.settings
+    init: true
+    command: "python manage.py runserver 0.0.0.0:9001"

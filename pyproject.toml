@@ -1,0 +1,51 @@
+[tool.poetry]
+name = "classting-assignment"
+version = "0.1.0"
+description = ""
+authors = ["Oscar Park <oscar.park@buzzvil.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+django = "^5.0.4"
+pytest-django = "^4.8.0"
+black = "^24.3.0"
+pycryptodome = "^3.20.0"
+pyjwt = "^2.8.0"
+flake8 = "^7.0.0"
+isort = "^5.13.2"
+pyupgrade = "^3.15.2"
+types-pyjwt = "^1.7.1"
+types-factory-boy = "^0.4.1"
+mypy = "^1.9.0"
+django-stubs = "^4.2.7"
+pytest-freezegun = "^0.4.2"
+factory-boy = "^3.3.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.mypy]
+python_version = "3.13"
+allow_redefinition = true
+plugins = ["mypy_django_plugin.main"]
+
+exclude = [
+  "(^|/)tests/",
+]
+
+[[tool.mypy.overrides]]
+module = [
+  "Crypto.*",
+  "jwt",
+  "factory",
+  "faker",
+  "pytest",
+]
+ignore_missing_imports = true
+
+[tool.django-stubs]
+django_settings_module = "common.settings"
+
