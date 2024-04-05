@@ -1,5 +1,5 @@
 from common import settings
-from users.utils import decrypt_aes, encrypt_aes
+from common.utils import decrypt_aes, encrypt_aes
 
 
 def test_encrypt_aes():

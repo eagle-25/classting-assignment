@@ -12,7 +12,7 @@ run:
 	docker-compose -f $(COMPOSE_FILE) up --build
 
 test:
-	docker-compose -f $(COMPOSE_FILE) run --build --rm dev bash -c "pytest"
+	docker-compose -f $(COMPOSE_FILE) run --build --rm dev bash -c "pytest -s"
 
 test-shell:
 	docker-compose -f $(COMPOSE_FILE) run --build --rm dev bash

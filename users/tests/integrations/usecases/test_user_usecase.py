@@ -4,12 +4,12 @@ import jwt
 import pytest
 
 from common import settings
+from common.utils import encrypt_aes
 from users.adapters.repos.django_user_repo import DjangoOrmUserRepo
 from users.domain.values import UserType
 from users.models import Users
 from users.tests.factories import UsersFactory
 from users.usecases.user_usecase import sign_in_usecase, sign_up_usecase
-from users.utils import encrypt_aes
 
 
 @pytest.mark.django_db
@@ -42,12 +42,13 @@ def test_sign_in_usecase():
     email과 password로 에 해당하는 사용자가 있을 때, jwt를 기대한대로 반환하는지 테스트한다.
     """
 
-    def _get_expected_jwt(user_id: int) -> str:
+    def _get_expected_jwt(user_id: int, user_type: UserType) -> str:
         session_expire_minutes = 60
         return str(
             jwt.encode(
                 {
                     "id": user_id,
+                    "type": user_type.value,
                     "exp": datetime.now(tz=timezone.utc)
                     + timedelta(minutes=session_expire_minutes),
                 },
@@ -70,4 +71,4 @@ def test_sign_in_usecase():
     res = sign_in_usecase(user_repo=DjangoOrmUserRepo(), email=email, password=password)
 
     # then
-    assert res == _get_expected_jwt(user_id=user.id)
+    assert res == _get_expected_jwt(user_id=user.id, user_type=UserType.PUBLISHER)

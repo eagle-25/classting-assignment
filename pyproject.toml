@@ -20,6 +20,7 @@ django-stubs = "^4.2.7"
 pytest-freezegun = "^0.4.2"
 factory-boy = "^3.3.0"
 pyjwt = "^2.8.0"
+pytest-watch = "^4.2.0"
 
 
 [build-system]

@@ -3,10 +3,10 @@ from datetime import datetime, timedelta, timezone
 import jwt
 
 from common import settings
+from common.utils import encrypt_aes
 from users.domain.entities import UserEntity
 from users.domain.interfaces import IUserRepo
 from users.domain.values import UserType
-from users.utils import encrypt_aes
 
 
 def sign_up_usecase(
@@ -35,6 +35,7 @@ def sign_in_usecase(user_repo: IUserRepo, *, email: str, password: str) -> str:
         jwt.encode(
             {
                 "id": user.id,
+                "type": user.user_type.value,
                 "exp": datetime.now(tz=timezone.utc)
                 + timedelta(minutes=SESSION_EXPIRE_MINUTES),
             },

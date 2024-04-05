@@ -7,10 +7,10 @@ class ClasstingException(Exception):
     msg = "Unknown error"
 
 
-class ServerException(ClasstingException):
+class ServiceException(ClasstingException):
     status = 500
     code = 1000
-    msg = "Server error"
+    msg = "Service Exception"
 
 
 class ClientException(ClasstingException):
@@ -27,3 +27,8 @@ class InvalidParameter(ClientException):
 class ValueNotFound(ClientException):
     code = 1002
     msg = "Value not found"
+
+
+class ValidationFailed(ClientException):
+    code = 1003
+    msg = "Validation failed"
