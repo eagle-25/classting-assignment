@@ -14,6 +14,9 @@ run:
 test:
 	docker-compose -f $(COMPOSE_FILE) run --build --rm dev bash -c "pytest"
 
+test-shell:
+	docker-compose -f $(COMPOSE_FILE) run --build --rm dev bash
+
 test-watch:
 	docker-compose -f $(COMPOSE_FILE) run --build --rm dev bash -c "ptw --poll"
 

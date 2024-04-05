@@ -11,16 +11,15 @@ django = "^5.0.4"
 pytest-django = "^4.8.0"
 black = "^24.3.0"
 pycryptodome = "^3.20.0"
-pyjwt = "^2.8.0"
 flake8 = "^7.0.0"
 isort = "^5.13.2"
 pyupgrade = "^3.15.2"
-types-pyjwt = "^1.7.1"
 types-factory-boy = "^0.4.1"
 mypy = "^1.9.0"
 django-stubs = "^4.2.7"
 pytest-freezegun = "^0.4.2"
 factory-boy = "^3.3.0"
+pyjwt = "^2.8.0"
 
 
 [build-system]
@@ -39,10 +38,10 @@ exclude = [
 [[tool.mypy.overrides]]
 module = [
   "Crypto.*",
-  "jwt",
   "factory",
   "faker",
   "pytest",
+  "jwt"
 ]
 ignore_missing_imports = true
 

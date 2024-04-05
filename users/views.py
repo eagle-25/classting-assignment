@@ -25,5 +25,7 @@ def sign_in_view(request: HttpRequest) -> HttpResponse:
         raise ValueNotFound(detail="email")
     if (password := request.POST.get("password")) is None:
         raise ValueNotFound(detail="password")
-    jwt = sign_in_usecase(user_repo=DjangoOrmUserRepo(), email=email, password=password)
-    return JsonResponse({"jwt_token": jwt}, status=200)
+    jwt_token = sign_in_usecase(
+        user_repo=DjangoOrmUserRepo(), email=email, password=password
+    )
+    return JsonResponse({"jwt_token": jwt_token}, status=200)

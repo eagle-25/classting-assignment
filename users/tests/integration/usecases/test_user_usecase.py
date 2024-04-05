@@ -44,14 +44,16 @@ def test_sign_in_usecase():
 
     def _get_expected_jwt(user_id: int) -> str:
         session_expire_minutes = 60
-        return jwt.encode(
-            {
-                "id": user_id,
-                "exp": datetime.now(tz=timezone.utc)
-                + timedelta(minutes=session_expire_minutes),
-            },
-            settings.AES_KEY,
-            algorithm="HS256",
+        return str(
+            jwt.encode(
+                {
+                    "id": user_id,
+                    "exp": datetime.now(tz=timezone.utc)
+                    + timedelta(minutes=session_expire_minutes),
+                },
+                settings.AES_KEY,
+                algorithm="HS256",
+            )
         )
 
     # given

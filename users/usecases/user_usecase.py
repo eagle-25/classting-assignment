@@ -31,12 +31,14 @@ def sign_in_usecase(user_repo: IUserRepo, *, email: str, password: str) -> str:
         data=password, key=settings.AES_KEY, iv=settings.AES_IV
     )
     user = user_repo.get(email=email, password=encrypted_password)
-    return jwt.encode(
-        {
-            "id": user.id,
-            "exp": datetime.now(tz=timezone.utc)
-            + timedelta(minutes=SESSION_EXPIRE_MINUTES),
-        },
-        settings.AES_KEY,
-        algorithm="HS256",
-    ).hex()
+    return str(
+        jwt.encode(
+            {
+                "id": user.id,
+                "exp": datetime.now(tz=timezone.utc)
+                + timedelta(minutes=SESSION_EXPIRE_MINUTES),
+            },
+            settings.AES_KEY,
+            algorithm="HS256",
+        )
+    )
