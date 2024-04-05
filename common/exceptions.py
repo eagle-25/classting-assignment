@@ -4,26 +4,26 @@ class ClasstingException(Exception):
 
     status = 500
     code = 1000
-    msg = "Unknown Error"
+    msg = "Unknown error"
 
 
 class ServerException(ClasstingException):
     status = 500
     code = 1000
-    msg = "Server Error"
+    msg = "Server error"
 
 
 class ClientException(ClasstingException):
     status = 400
     code = 1000
-    msg = "Client Error"
+    msg = "Client error"
 
 
 class InvalidParameter(ClientException):
     code = 1001
-    msg = "Invalid Parameter"
+    msg = "Invalid parameter"
 
 
 class ValueNotFound(ClientException):
     code = 1002
-    msg = "Value Not Found"
+    msg = "Value not found"
