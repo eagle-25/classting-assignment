@@ -51,7 +51,7 @@ def delete_subscription_usecase(
     )
 
 
-def get_subscribed_publisher_ids_usecase(
+def get_publisher_ids_usecase(
     subscription_repo: ISubscriptionRepo, subscriber_id: int
 ) -> list[int]:
     _validate_is_expected_user(

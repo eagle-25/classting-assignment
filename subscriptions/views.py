@@ -1,5 +1,5 @@
 import jwt
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.views import View
 
 from common import settings
@@ -7,7 +7,10 @@ from common.exceptions import InvalidParameter, ValueNotFound
 from subscriptions.adapters.repos.django_subscription_repo import (
     DjangoOrmSubscriptionRepo,
 )
-from subscriptions.usecases.subscription_usecaes import create_subscription_usecase
+from subscriptions.usecases.subscription_usecaes import (
+    create_subscription_usecase,
+    get_publisher_ids_usecase,
+)
 from users.domain.values import UserType
 
 
@@ -47,3 +50,17 @@ class SubscriptionsView(View):
             publisher_id=int(publisher_id),
         )
         return HttpResponse(status=201)
+
+    def get(self, request: HttpRequest) -> HttpResponse:
+        if (jwt_token := request.headers.get("Authorization")) is None:
+            raise ValueNotFound(detail="Authorization header not found")
+        user_id, user_type = _pare_user_id_and_type(jwt_token)
+        if user_type != UserType.SUBSCRIBER.value:
+            raise InvalidParameter(
+                detail="User should be SUBSCRIBER"
+            )  # 기대한 유저 타입이 아닌 경우 에러 발생
+
+        publisher_ids = get_publisher_ids_usecase(
+            subscription_repo=DjangoOrmSubscriptionRepo(), subscriber_id=user_id
+        )
+        return JsonResponse({"publisher_ids": publisher_ids}, status=200)

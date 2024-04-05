@@ -45,5 +45,5 @@ class DjangoOrmSubscriptionRepo(ISubscriptionRepo):
     def get_publisher_ids(self, subscriber_id: int) -> Iterator[int]:
         subscriptions = Subscriptions.objects.filter(
             subscriber_id=subscriber_id, is_deleted=False
-        ).order_by("id")
+        ).order_by("publisher_id")
         yield from [subscription.publisher_id for subscription in subscriptions]

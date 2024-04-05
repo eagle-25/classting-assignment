@@ -11,10 +11,10 @@ class DjangoOrmUserRepo(IUserRepo):
         try:
             return Users.objects.get(email=email, password=password).to_entity()
         except Users.DoesNotExist:
-            raise UserNotFound
+            raise UserNotFound(detail="Check email or password")
 
     def create(self, entity: UserEntity):
         try:
             Users.from_entity(entity).save()
         except IntegrityError:
-            raise UserCreateFailed
+            raise UserCreateFailed(detail="User already exists")
