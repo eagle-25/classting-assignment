@@ -1,6 +1,10 @@
+import logging
+
 from django.http import HttpRequest, JsonResponse
 
 from common.exceptions import ClasstingException
+
+logger = logging.getLogger(__name__)
 
 
 class ExceptionMiddleware:

@@ -14,7 +14,7 @@ run:
 test:
 	docker-compose -f $(COMPOSE_FILE) run --build --rm dev bash -c "pytest -s"
 
-test-shell:
+shell:
 	docker-compose -f $(COMPOSE_FILE) run --build --rm dev bash
 
 test-watch:
