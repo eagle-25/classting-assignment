@@ -7,7 +7,7 @@ from django.test import RequestFactory
 from freezegun import freeze_time
 
 from common.decorators import jwt_login
-from common.exceptions import ValueNotFound
+from common.exceptions import Unauthorized, ValueNotFound
 from common.utils import encode_jwt
 
 
@@ -24,10 +24,11 @@ def test_jwt_login():
     with freeze_time("2024-01-01 00:00:00"):
         # given
         jwt = encode_jwt({"id": 1, "exp": datetime.now() + timedelta(minutes=1)})
-        request = RequestFactory().get("/", headers={"Authorization": jwt})
+        request = RequestFactory()
+        request.COOKIES = {"jwt": jwt}
 
         # when
-        res = jwt_login()(mocked_http_view)(request)
+        res = jwt_login(mocked_http_view)(request)
 
         # then
         assert res.status_code == 200
@@ -35,15 +36,15 @@ def test_jwt_login():
 
 def test_jwt_login_error_no_authorization_header():
     """
-    Authorization 헤더가 없을 때, ValueNotFound 예외가 발생하는지 테스트한다.
+    쿠키에 jwt가 없을 때, Unauthorized 예외가 발생하는지 테스트한다.
     """
     # given
-    request = RequestFactory().get("/")
+    request = RequestFactory()
+    request.COOKIES = {}
 
     # when, then
-    with pytest.raises(ValueNotFound) as e:
-        jwt_login()(mocked_http_view)(request)
-    assert e.value.detail == "Authorization header not found"
+    with pytest.raises(Unauthorized):
+        jwt_login(mocked_http_view)(request)
 
 
 def test_jwt_login_error_no_user_id():
@@ -52,9 +53,39 @@ def test_jwt_login_error_no_user_id():
     """
     # given
     jwt = encode_jwt({})
-    request = RequestFactory().get("/", headers={"Authorization": jwt})
+    request = RequestFactory()
+    request.COOKIES = {"jwt": jwt}
 
     # when, then
     with pytest.raises(ValueNotFound) as e:
-        jwt_login()(mocked_http_view)(request)
+        jwt_login(mocked_http_view)(request)
     assert e.value.detail == "user_id not found"
+
+
+def test_jwt_login_error_jwt_expired():
+    """
+    jwt가 만료되었을 때, Unauthorized 예외가 발생하는지 테스트한다.
+    """
+    with freeze_time("2024-01-01 00:00:00"):
+        # given
+        jwt = encode_jwt({"id": 1, "exp": datetime.now() - timedelta(minutes=1)})
+        request = RequestFactory()
+        request.COOKIES = {"jwt": jwt}
+
+        # when, then
+        with pytest.raises(Unauthorized):
+            jwt_login(mocked_http_view)(request)
+
+
+def test_jwt_login_error_invalid_jwt():
+    """
+    jwt가 유효하지 않을 때, Unauthorized 예외가 발생하는지 테스트한다.
+    """
+    # given
+    jwt = "invalid_jwt"
+    request = RequestFactory()
+    request.COOKIES = {"jwt": jwt}
+
+    # when, then
+    with pytest.raises(Unauthorized):
+        jwt_login(mocked_http_view)(request)

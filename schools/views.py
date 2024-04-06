@@ -19,7 +19,7 @@ from schools.usecases.school_usecase import (
 
 
 class SchoolView(View):
-    @method_decorator(jwt_login())
+    @method_decorator(jwt_login)
     def post(self, request: HttpRequest, user_id: int) -> HttpResponse:
         """
         학교를 생성하는 API View
@@ -33,7 +33,7 @@ class SchoolView(View):
         create_school_usecase(school_repo=DjangoOrmSchoolsRepo(), owner_id=int(owner_id), name=school_name, city=city)
         return HttpResponse(status=201)
 
-    @method_decorator(jwt_login())
+    @method_decorator(jwt_login)
     def get(self, request: HttpRequest, user_id: int) -> HttpResponse:
         """
         owner가 가지는 학교들을 조회하는 API View
@@ -46,7 +46,7 @@ class SchoolView(View):
 
 
 class SchoolNewsView(View):
-    @method_decorator(jwt_login())
+    @method_decorator(jwt_login)
     def post(self, request: HttpRequest, user_id: int, school_id: int) -> HttpResponse:
         """
         학교 소식을 생성하는 API View
@@ -57,7 +57,7 @@ class SchoolNewsView(View):
         create_school_news_usecase(school_repo=school_repo, owner_id=user_id, school_id=school_id, content=content)
         return HttpResponse(status=201)
 
-    @method_decorator(jwt_login())
+    @method_decorator(jwt_login)
     def get(self, request: HttpRequest, user_id: int, school_id: int) -> HttpResponse:
         """
         학교별 소식들을 조회하는 API View
@@ -66,7 +66,7 @@ class SchoolNewsView(View):
         school_news = [dataclasses.asdict(news) for news in school_news]
         return JsonResponse(data={'school_news': school_news}, status=200)
 
-    @method_decorator(jwt_login())
+    @method_decorator(jwt_login)
     def patch(self, request: HttpRequest, user_id: int, news_id: int) -> HttpResponse:
         """
         학교 소식을 수정하는 API View. 필드 추가되는 경우 대비해 patch로 구현
@@ -78,7 +78,7 @@ class SchoolNewsView(View):
         res = update_school_news_usecase(school_repo=school_repo, owner_id=user_id, news_id=news_id, content=content)
         return JsonResponse(data=dataclasses.asdict(res), status=200)
 
-    @method_decorator(jwt_login())
+    @method_decorator(jwt_login)
     def delete(self, request: HttpRequest, user_id: int, news_id: int) -> HttpResponse:
         """
         학교 소식을 삭제하는 API View
