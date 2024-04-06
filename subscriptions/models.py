@@ -12,23 +12,15 @@ class Subscriptions(models.Model):
     """
 
     id = models.SmallAutoField(primary_key=True)
-    publisher = models.ForeignKey(
-        Users, on_delete=models.DO_NOTHING, related_name="publisher"
-    )
-    subscriber = models.ForeignKey(
-        Users, on_delete=models.DO_NOTHING, related_name="subscriber"
-    )
+    publisher = models.ForeignKey(Users, on_delete=models.DO_NOTHING, related_name="publisher")
+    subscriber = models.ForeignKey(Users, on_delete=models.DO_NOTHING, related_name="subscriber")
     is_deleted = models.BooleanField(default=False)  # 구독 취소 여부
     created_at = models.DateTimeField(auto_now_add=True)
     deleted_at = models.DateTimeField(null=True)  # 구독 취소 시간
 
     class Meta:
         db_table = "subscriptions"
-        constraints = [
-            models.UniqueConstraint(
-                fields=["publisher_id", "subscriber_id"], name="unique_user_publisher"
-            )
-        ]
+        constraints = [models.UniqueConstraint(fields=["publisher_id", "subscriber_id"], name="unique_user_publisher")]
 
     @classmethod
     def from_entity(cls, entity: SubscriptionEntity) -> Subscriptions:

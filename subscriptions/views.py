@@ -9,8 +9,8 @@ from subscriptions.adapters.repos.django_subscription_repo import (
 )
 from subscriptions.usecases.subscription_usecaes import (
     create_subscription_usecase,
-    get_publisher_ids_usecase,
     delete_subscription_usecase,
+    get_publisher_ids_usecase,
 )
 from users.domain.values import UserType
 
@@ -36,9 +36,7 @@ class SubscriptionsView(View):
             raise ValueNotFound(detail="Authorization header not found")
         user_id, user_type = _pare_user_id_and_type(jwt_token)
         if user_type != UserType.SUBSCRIBER.value:
-            raise InvalidParameter(
-                detail="User should be SUBSCRIBER"
-            )  # 기대한 유저 타입이 아닌 경우 에러 발생
+            raise InvalidParameter(detail="User should be SUBSCRIBER")  # 기대한 유저 타입이 아닌 경우 에러 발생
 
         # publisher_id 파싱
         if (publisher_id := request.POST.get("publisher_id")) is None:
@@ -57,13 +55,9 @@ class SubscriptionsView(View):
             raise ValueNotFound(detail="Authorization header not found")
         user_id, user_type = _pare_user_id_and_type(jwt_token)
         if user_type != UserType.SUBSCRIBER.value:
-            raise InvalidParameter(
-                detail="User should be SUBSCRIBER"
-            )  # 기대한 유저 타입이 아닌 경우 에러 발생
+            raise InvalidParameter(detail="User should be SUBSCRIBER")  # 기대한 유저 타입이 아닌 경우 에러 발생
 
-        publisher_ids = get_publisher_ids_usecase(
-            subscription_repo=DjangoOrmSubscriptionRepo(), subscriber_id=user_id
-        )
+        publisher_ids = get_publisher_ids_usecase(subscription_repo=DjangoOrmSubscriptionRepo(), subscriber_id=user_id)
         return JsonResponse({"publisher_ids": publisher_ids}, status=200)
 
     def delete(self, request: HttpRequest, publisher_id: int) -> HttpResponse:
@@ -71,9 +65,7 @@ class SubscriptionsView(View):
             raise ValueNotFound(detail="Authorization header not found")
         user_id, user_type = _pare_user_id_and_type(jwt_token)
         if user_type != UserType.SUBSCRIBER.value:
-            raise InvalidParameter(
-                detail="User should be SUBSCRIBER"
-            )  # 기대한 유저 타입이 아닌 경우 에러 발생
+            raise InvalidParameter(detail="User should be SUBSCRIBER")  # 기대한 유저 타입이 아닌 경우 에러 발생
 
         delete_subscription_usecase(
             subscription_repo=DjangoOrmSubscriptionRepo(),

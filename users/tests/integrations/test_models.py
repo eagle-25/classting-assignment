@@ -22,9 +22,7 @@ def test_users_to_entity():
 
 def test_users_from_entity():
     # given
-    entity = UserEntity(
-        id=1, email="email", password="password", user_type=UserType.PUBLISHER
-    )
+    entity = UserEntity(id=1, email="email", password="password", user_type=UserType.PUBLISHER)
     # when
     user = Users.from_entity(entity)
     # then

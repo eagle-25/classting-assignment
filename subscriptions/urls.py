@@ -8,7 +8,5 @@ urlpatterns = [
         views.SubscriptionsView.as_view(),
         name="delete_subscription_view",
     ),  # DELETE
-    re_path(
-        "", views.SubscriptionsView.as_view(), name="create_or_get_subscription_view"
-    ),  # GET, POST
+    re_path("", views.SubscriptionsView.as_view(), name="create_or_get_subscription_view"),  # GET, POST
 ]

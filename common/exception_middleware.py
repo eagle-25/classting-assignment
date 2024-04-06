@@ -14,9 +14,7 @@ class ExceptionMiddleware:
     def __call__(self, request):
         return self.get_response(request)
 
-    def process_exception(
-        self, request: HttpRequest, exception: Exception
-    ) -> JsonResponse | None:
+    def process_exception(self, request: HttpRequest, exception: Exception) -> JsonResponse | None:
         if isinstance(exception, ClasstingException):
             return JsonResponse(
                 {

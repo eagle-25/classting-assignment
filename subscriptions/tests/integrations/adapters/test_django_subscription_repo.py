@@ -33,9 +33,7 @@ def test_django_subscription_repo_create_new(subscriber, publisher):
     repo.create_subscription(subscriber_id=subscriber.id, publisher_id=publisher.id)
 
     # then
-    subscriptions = Subscriptions.objects.filter(
-        subscriber_id=subscriber.id, publisher_id=publisher.id
-    )
+    subscriptions = Subscriptions.objects.filter(subscriber_id=subscriber.id, publisher_id=publisher.id)
     assert subscriptions.count() == 1
     assert subscriptions[0].is_deleted is False
     assert subscriptions[0].deleted_at is None
@@ -54,9 +52,7 @@ def test_django_subscription_repo_resubscribe(subscriber, publisher):
     repo.create_subscription(subscriber_id=subscriber.id, publisher_id=publisher.id)
 
     # then
-    subscription = Subscriptions.objects.get(
-        subscriber_id=subscriber.id, publisher_id=publisher.id
-    )
+    subscription = Subscriptions.objects.get(subscriber_id=subscriber.id, publisher_id=publisher.id)
     assert subscription.is_deleted is False
     assert subscription.deleted_at is None
 
@@ -88,9 +84,7 @@ def test_django_subscription_repo_delete(subscriber, publisher):
     repo.delete_subscription(subscriber.id, publisher.id)
 
     # then
-    subscription = Subscriptions.objects.get(
-        subscriber_id=subscriber.id, publisher_id=publisher.id
-    )
+    subscription = Subscriptions.objects.get(subscriber_id=subscriber.id, publisher_id=publisher.id)
     assert subscription.is_deleted is True
     assert subscription.deleted_at is not None
 
@@ -107,10 +101,7 @@ def test_django_subscription_repo_delete_not_found(subscriber, publisher):
     with pytest.raises(SubscriptionNotFound) as e:
         repo = DjangoOrmSubscriptionRepo()
         repo.delete_subscription(subscriber.id, publisher.id)
-    assert (
-        e.value.detail
-        == f"subscriber_id: {subscriber.id}, publisher_id: {publisher.id}"
-    )
+    assert e.value.detail == f"subscriber_id: {subscriber.id}, publisher_id: {publisher.id}"
 
 
 @pytest.mark.django_db

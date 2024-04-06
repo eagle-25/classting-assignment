@@ -30,9 +30,7 @@ def test_sign_up_usecase():
     )
 
     # then
-    encrypted_password = encrypt_aes(
-        data=password, key=settings.AES_KEY, iv=settings.AES_IV
-    )
+    encrypted_password = encrypt_aes(data=password, key=settings.AES_KEY, iv=settings.AES_IV)
     assert Users.objects.filter(email=email, password=encrypted_password).exists()
 
 
@@ -49,8 +47,7 @@ def test_sign_in_usecase():
                 {
                     "id": user_id,
                     "type": user_type.value,
-                    "exp": datetime.now(tz=timezone.utc)
-                    + timedelta(minutes=session_expire_minutes),
+                    "exp": datetime.now(tz=timezone.utc) + timedelta(minutes=session_expire_minutes),
                 },
                 settings.AES_KEY,
                 algorithm="HS256",
@@ -60,12 +57,8 @@ def test_sign_in_usecase():
     # given
     email = "abc@example.com"
     password = "password"
-    encrypted_password = encrypt_aes(
-        data=password, key=settings.AES_KEY, iv=settings.AES_IV
-    )
-    user = UsersFactory(
-        email=email, password=encrypted_password, user_type=UserType.PUBLISHER
-    )
+    encrypted_password = encrypt_aes(data=password, key=settings.AES_KEY, iv=settings.AES_IV)
+    user = UsersFactory(email=email, password=encrypted_password, user_type=UserType.PUBLISHER)
 
     # when
     res = sign_in_usecase(user_repo=DjangoOrmUserRepo(), email=email, password=password)

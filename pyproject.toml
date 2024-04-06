@@ -49,3 +49,8 @@ ignore_missing_imports = true
 [tool.django-stubs]
 django_settings_module = "common.settings"
 
+[tool.black]
+line-length = 120
+target-version = ['py311']
+skip-string-normalization = true
+extend-exclude = '(:?venv.?|migrations/|cache/)'

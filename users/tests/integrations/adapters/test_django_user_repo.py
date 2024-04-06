@@ -17,9 +17,7 @@ def test_django_user_repo_get():
     user_id = 1
     email = "abc@example.com"
     password = "password"
-    UsersFactory(
-        id=user_id, email=email, password=password, user_type=UserType.PUBLISHER
-    )
+    UsersFactory(id=user_id, email=email, password=password, user_type=UserType.PUBLISHER)
 
     # when
     res = DjangoOrmUserRepo().get(email=email, password=password)
@@ -47,9 +45,7 @@ def test_django_user_repo_create():
     사용자를 생성할 수 있는지 테스트한다.
     """
     # given
-    entity = UserEntity(
-        email="abc@example.com", password="password", user_type=UserType.PUBLISHER
-    )
+    entity = UserEntity(email="abc@example.com", password="password", user_type=UserType.PUBLISHER)
 
     # when
     DjangoOrmUserRepo().create(entity=entity)

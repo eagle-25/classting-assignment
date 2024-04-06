@@ -28,7 +28,5 @@ class UsersView(View):
             raise ValueNotFound(detail="email")
         if (password := request.GET.get("password")) is None:
             raise ValueNotFound(detail="password")
-        jwt_token = sign_in_usecase(
-            user_repo=DjangoOrmUserRepo(), email=email, password=password
-        )
+        jwt_token = sign_in_usecase(user_repo=DjangoOrmUserRepo(), email=email, password=password)
         return JsonResponse({"jwt_token": jwt_token}, status=200)
