@@ -29,3 +29,7 @@ lint:
 format:
 	poetry run black .
 	poetry run isort .
+
+codecov:
+	export $(cat .envs/local_django_env | xargs)
+	pytest --cov . --cov-config ./coverage.ini
