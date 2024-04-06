@@ -6,9 +6,9 @@ from users.usecases.user_usecase import sign_in_usecase, sign_up_usecase
 
 
 def sign_in_view(request: HttpRequest) -> HttpResponse:
-    if (email := request.GET.get("email")) is None:
+    if (email := request.POST.get("email")) is None:
         raise ValueNotFound(detail="email")
-    if (password := request.GET.get("password")) is None:
+    if (password := request.POST.get("password")) is None:
         raise ValueNotFound(detail="password")
     jwt_token = sign_in_usecase(user_repo=DjangoOrmUserRepo(), email=email, password=password)
     resp = HttpResponse(status=200)
