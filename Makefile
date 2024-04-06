@@ -24,12 +24,7 @@ mypy:
 	poetry run mypy .
 
 lint:
-	poetry run flake8 .
-
-format:
 	poetry run black .
 	poetry run isort .
-
-codecov:
-	export $(cat .envs/local_django_env | xargs)
-	pytest --cov . --cov-config ./coverage.ini
+	poetry run flake8 .
+	poetry run mypy .

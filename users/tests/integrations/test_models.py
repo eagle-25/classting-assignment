@@ -2,13 +2,13 @@ import pytest
 
 from users.domain.entities import UserEntity
 from users.models import Users
-from users.tests.factories import UsersFactory
+from users.tests.factories import UserFactory
 
 
 @pytest.mark.django_db
 def test_users_to_entity():
     # given
-    user = UsersFactory()
+    user = UserFactory()
     # when
     entity = user.to_entity()
     # then

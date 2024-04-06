@@ -6,7 +6,7 @@ from common import settings
 from common.utils import encode_jwt, encrypt_aes
 from users.adapters.repos.django_user_repo import DjangoOrmUserRepo
 from users.models import Users
-from users.tests.factories import UsersFactory
+from users.tests.factories import UserFactory
 from users.usecases.user_usecase import sign_in_usecase, sign_up_usecase
 
 
@@ -50,7 +50,7 @@ def test_sign_in_usecase():
     email = "abc@example.com"
     password = "password"
     encrypted_password = encrypt_aes(data=password, key=settings.AES_KEY, iv=settings.AES_IV)
-    user = UsersFactory(email=email, password=encrypted_password)
+    user = UserFactory(email=email, password=encrypted_password)
 
     # when
     res = sign_in_usecase(user_repo=DjangoOrmUserRepo(), email=email, password=password)
