@@ -3,7 +3,6 @@ from django.views import View
 
 from common.exceptions import ValueNotFound
 from users.adapters.repos.django_user_repo import DjangoOrmUserRepo
-from users.domain.values import UserType
 from users.usecases.user_usecase import sign_in_usecase, sign_up_usecase
 
 
@@ -13,13 +12,10 @@ class UsersView(View):
             raise ValueNotFound(detail="email")
         if (password := request.POST.get("password")) is None:
             raise ValueNotFound(detail="password")
-        if (user_type := request.POST.get("user_type")) is None:
-            raise ValueNotFound(detail="user_type")
         sign_up_usecase(
             user_repo=DjangoOrmUserRepo(),
             email=email,
             password=password,
-            user_type=UserType(user_type),
         )
         return HttpResponse(status=200)
 

@@ -3,7 +3,6 @@ import pytest
 from users.adapters.repos.django_user_repo import DjangoOrmUserRepo
 from users.domain.entities import UserEntity
 from users.domain.exceptions import UserCreateFailed, UserNotFound
-from users.domain.values import UserType
 from users.models import Users
 from users.tests.factories import UsersFactory
 
@@ -14,7 +13,7 @@ def test_get_django_user_repo():
     사용자를 조회할 수 있는지 테스트한다.
     """
     # given
-    user = UsersFactory(user_type=UserType.PUBLISHER)
+    user = UsersFactory()
 
     # when
     repo = DjangoOrmUserRepo()
@@ -46,7 +45,7 @@ def test_django_user_repo_get_by_email_and_password():
     user_id = 1
     email = "abc@example.com"
     password = "password"
-    UsersFactory(id=user_id, email=email, password=password, user_type=UserType.PUBLISHER)
+    UsersFactory(id=user_id, email=email, password=password)
 
     # when
     res = DjangoOrmUserRepo().get_by_email_and_password(email=email, password=password)
@@ -61,7 +60,7 @@ def test_django_user_repo_get_by_email_and_password_not_found():
     사용자가 존재하지 않을 때 UserNotFound 예외가 발생하는지 테스트한다.
     """
     # given
-    UsersFactory(user_type=UserType.PUBLISHER)
+    UsersFactory()
 
     # when, then
     with pytest.raises(UserNotFound):
@@ -74,7 +73,7 @@ def test_django_user_repo_create():
     사용자를 생성할 수 있는지 테스트한다.
     """
     # given
-    entity = UserEntity(email="abc@example.com", password="password", user_type=UserType.PUBLISHER)
+    entity = UserEntity(email="abc@example.com", password="password")
 
     # when
     DjangoOrmUserRepo().create(entity=entity)
@@ -93,6 +92,6 @@ def test_django_user_repo_create_failed():
     UsersFactory(email=email)
 
     # when, then
-    entity = UserEntity(email=email, password="_", user_type=UserType.PUBLISHER)
+    entity = UserEntity(email=email, password="_")
     with pytest.raises(UserCreateFailed):
         DjangoOrmUserRepo().create(entity=entity)
