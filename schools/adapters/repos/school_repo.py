@@ -18,10 +18,7 @@ class DjangoOrmSchoolsRepo(ISchoolRepo):
             raise SchoolCreateFailed(detail="Already exists")
 
     def list_school(self, owner_id: int) -> list[SchoolEntity]:
-        try:
-            return [x.to_entity() for x in Schools.objects.filter(owner_id=owner_id).order_by('id')]
-        except Schools.DoesNotExist:
-            raise SchoolNotFound
+        return [x.to_entity() for x in Schools.objects.filter(owner_id=owner_id).order_by('id')]
 
     def create_school_news(self, entity: SchoolNewsEntity) -> None:
         SchoolNews.from_entity(entity=entity).save()

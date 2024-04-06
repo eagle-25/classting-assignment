@@ -77,14 +77,13 @@ def create_school_news_usecase_with_not_owned_school():
     # given
     owner = UserFactory()
     school = SchoolFactory(owner_id=owner.id)
-    content = "content"
 
     # when
     not_owner = UserFactory()
 
     with pytest.raises(Unauthorized):
         repo = DjangoOrmSchoolsRepo()
-        create_school_news_usecase(school_repo=repo, owner_id=not_owner.id, school_id=school.id, content=content)
+        create_school_news_usecase(school_repo=repo, owner_id=not_owner.id, school_id=school.id, content="")
 
 
 @pytest.mark.django_db

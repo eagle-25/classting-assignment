@@ -126,6 +126,17 @@ def test_django_school_repo_update_school_news():
 
 
 @pytest.mark.django_db
+def tset_djagno_school_repo_update_school_news_not_found():
+    """
+    존재하지 않는 소식을 수정할 때 에러가 발생하는지 테스트
+    """
+    # when, then
+    repo = DjangoOrmSchoolsRepo()
+    with pytest.raises(SchoolNotFound):
+        repo.update_school_news(news_id=1, content="content")
+
+
+@pytest.mark.django_db
 def test_django_school_repo_delete_school_news():
     """
     학교 소식을 삭제할 수 있는지 테스트
@@ -141,6 +152,17 @@ def test_django_school_repo_delete_school_news():
 
     # then
     assert not SchoolNews.objects.filter(id=school_news.id).exists()
+
+
+@pytest.mark.django_db
+def test_django_school_repo_delete_school_news_not_found():
+    """
+    존재하지 않는 소식을 삭제할 때 에러가 발생하는지 테스트
+    """
+    # when, then
+    repo = DjangoOrmSchoolsRepo()
+    with pytest.raises(SchoolNotFound):
+        repo.delete_school_news(news_id=1)
 
 
 @pytest.mark.django_db
