@@ -10,7 +10,7 @@ from subscriptions.models import Subscriptions
 
 
 class DjangoOrmSubscriptionRepo(ISubscriptionRepo):
-    def create_subscription(self, subscriber_id: int, publisher_id: int) -> None:
+    def create(self, subscriber_id: int, publisher_id: int) -> None:
         """
         publisher 와 subscriber 간의 구독을 생성한다.
         """
@@ -25,7 +25,7 @@ class DjangoOrmSubscriptionRepo(ISubscriptionRepo):
         except Subscriptions.DoesNotExist:
             Subscriptions.objects.create(subscriber_id=subscriber_id, publisher_id=publisher_id)
 
-    def delete_subscription(self, subscriber_id: int, publisher_id: int) -> None:
+    def delete(self, subscriber_id: int, publisher_id: int) -> None:
         subscription = Subscriptions.objects.filter(
             subscriber_id=subscriber_id, publisher_id=publisher_id, is_deleted=False
         )

@@ -9,7 +9,36 @@ from users.tests.factories import UsersFactory
 
 
 @pytest.mark.django_db
-def test_django_user_repo_get():
+def test_get_django_user_repo():
+    """
+    사용자를 조회할 수 있는지 테스트한다.
+    """
+    # given
+    user = UsersFactory(user_type=UserType.PUBLISHER)
+
+    # when
+    repo = DjangoOrmUserRepo()
+    res = repo.get(user_id=user.id)
+
+    # then
+    assert res.id == user.id
+
+
+@pytest.mark.django_db
+def test_get_django_user_repo_not_found():
+    """
+    사용자가 존재하지 않을 때 UserNotFound 예외가 발생하는지 테스트한다.
+    """
+    # given
+    user_id = 1
+
+    # when, then
+    with pytest.raises(UserNotFound):
+        DjangoOrmUserRepo().get(user_id=user_id)
+
+
+@pytest.mark.django_db
+def test_django_user_repo_get_by_email_and_password():
     """
     email과 password로 사용자를 조회할 수 있는지 테스트한다.
     """
@@ -20,14 +49,14 @@ def test_django_user_repo_get():
     UsersFactory(id=user_id, email=email, password=password, user_type=UserType.PUBLISHER)
 
     # when
-    res = DjangoOrmUserRepo().get(email=email, password=password)
+    res = DjangoOrmUserRepo().get_by_email_and_password(email=email, password=password)
 
     # then
     assert res.id == user_id
 
 
 @pytest.mark.django_db
-def test_django_user_repo_get_not_found():
+def test_django_user_repo_get_by_email_and_password_not_found():
     """
     사용자가 존재하지 않을 때 UserNotFound 예외가 발생하는지 테스트한다.
     """
@@ -36,7 +65,7 @@ def test_django_user_repo_get_not_found():
 
     # when, then
     with pytest.raises(UserNotFound):
-        DjangoOrmUserRepo().get(email="_", password="_")
+        DjangoOrmUserRepo().get_by_email_and_password(email="_", password="_")
 
 
 @pytest.mark.django_db

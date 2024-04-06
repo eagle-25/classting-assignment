@@ -1,38 +1,53 @@
 from common.exceptions import InvalidParameter, ValidationFailed
 from subscriptions.domain.interfaces import ISubscriptionRepo
+from users.domain.interfaces import IUserRepo
 from users.domain.values import UserType
-from users.models import Users
 
 
-def _validate_is_expected_user(user_id: int, expected_user_type: UserType):
-    try:
-        user = Users.objects.get(id=user_id)
-    except Users.DoesNotExist:
-        raise ValidationFailed(detail=f"User not found: id={user_id}")
+def _validate_user(user_repo: IUserRepo, user_id: int, expected_user_type: UserType):
+    user = user_repo.get(user_id=user_id)
+    if user is None:
+        raise ValidationFailed(detail="User not found")
     if user.user_type != expected_user_type:
-        raise ValidationFailed(detail=f"User:{user_id} should be {expected_user_type.value}")
-    return user
+        raise InvalidParameter(detail=f"User should be {expected_user_type.value}")
 
 
-def create_subscription_usecase(subscription_repo: ISubscriptionRepo, subscriber_id: int, publisher_id: int):
+def _validate_subscriber_and_publisher(user_repo: IUserRepo, subscriber_id: int, publisher_id: int) -> None:
     if subscriber_id == publisher_id:
         raise InvalidParameter(detail="Cannot subscribe same user")
-    else:
-        _validate_is_expected_user(user_id=subscriber_id, expected_user_type=UserType.SUBSCRIBER)
-        _validate_is_expected_user(user_id=publisher_id, expected_user_type=UserType.PUBLISHER)
-
-    subscription_repo.create_subscription(subscriber_id=subscriber_id, publisher_id=publisher_id)
+    _validate_user(user_repo=user_repo, user_id=subscriber_id, expected_user_type=UserType.SUBSCRIBER)
+    _validate_user(user_repo=user_repo, user_id=publisher_id, expected_user_type=UserType.PUBLISHER)
 
 
-def delete_subscription_usecase(subscription_repo: ISubscriptionRepo, subscriber_id: int, publisher_id: int):
-    if subscriber_id == publisher_id:
-        raise InvalidParameter(detail="Cannot subscribe same user")
-    else:
-        _validate_is_expected_user(user_id=subscriber_id, expected_user_type=UserType.SUBSCRIBER)
-        _validate_is_expected_user(user_id=publisher_id, expected_user_type=UserType.PUBLISHER)
-    subscription_repo.delete_subscription(subscriber_id=subscriber_id, publisher_id=publisher_id)
+class CreateSubscriptionUsecase:
+    def __init__(self, subscription_repo: ISubscriptionRepo, user_repo: IUserRepo) -> None:
+        self.subscription_repo = subscription_repo
+        self.user_repo = user_repo
+
+    def execute(self, subscriber_id: int, publisher_id: int):
+        _validate_subscriber_and_publisher(
+            user_repo=self.user_repo, subscriber_id=subscriber_id, publisher_id=publisher_id
+        )
+        self.subscription_repo.create(subscriber_id=subscriber_id, publisher_id=publisher_id)
 
 
-def get_publisher_ids_usecase(subscription_repo: ISubscriptionRepo, subscriber_id: int) -> list[int]:
-    _validate_is_expected_user(user_id=subscriber_id, expected_user_type=UserType.SUBSCRIBER)
-    return list(subscription_repo.get_publisher_ids(subscriber_id=subscriber_id))
+class DeleteSubscriptionUsecase:
+    def __init__(self, subscription_repo: ISubscriptionRepo, user_repo: IUserRepo) -> None:
+        self.subscription_repo = subscription_repo
+        self.user_repo = user_repo
+
+    def execute(self, subscriber_id: int, publisher_id: int):
+        _validate_subscriber_and_publisher(
+            user_repo=self.user_repo, subscriber_id=subscriber_id, publisher_id=publisher_id
+        )
+        self.subscription_repo.delete(subscriber_id=subscriber_id, publisher_id=publisher_id)
+
+
+class GetPublisherIdsUsecase:
+    def __init__(self, subscription_repo: ISubscriptionRepo, user_repo: IUserRepo) -> None:
+        self.subscription_repo = subscription_repo
+        self.user_repo = user_repo
+
+    def execute(self, subscriber_id: int) -> list[int]:
+        _validate_user(user_repo=self.user_repo, user_id=subscriber_id, expected_user_type=UserType.SUBSCRIBER)
+        return list(self.subscription_repo.get_publisher_ids(subscriber_id=subscriber_id))

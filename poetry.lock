@@ -146,6 +146,17 @@ django = "*"
 typing-extensions = "*"
 
 [[package]]
+name = "django-tests"
+version = "1.8.3"
+description = "The Django test suite, as an installable package."
+optional = false
+python-versions = "*"
+files = [
+    {file = "django-tests-1.8.3.tar.gz", hash = "sha256:c5d2029d9e74d3704babf90a512fba2aa54aa34fd7d62ab0381c7ceab08a063d"},
+    {file = "django_tests-1.8.3-py2.py3-none-any.whl", hash = "sha256:60980a3286d8d3bfbbf20d99be4bd70b22bc02259522dffffbc411d6323ef219"},
+]
+
+[[package]]
 name = "docopt"
 version = "0.6.2"
 description = "Pythonic argument parser, that will make you smile"
@@ -708,4 +719,4 @@ watchmedo = ["PyYAML (>=3.10)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "d8cd88ee69d1e383ce2e27938636e5cfc81b6932928c4364fef0b38648c25342"
+content-hash = "8bc6852bad146cf571faedfd82adcbc5161432bda35fc5ad6982fcd2d0ef52e0"

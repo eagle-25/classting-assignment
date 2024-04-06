@@ -1,5 +1,12 @@
+from datetime import datetime, timedelta, timezone
+
+import jwt
+import pytest
+from freezegun import freeze_time
+
 from common import settings
-from common.utils import decrypt_aes, encrypt_aes
+from common.exceptions import InvalidParameter
+from common.utils import decode_jwt, decrypt_aes, encode_jwt, encrypt_aes
 
 
 def test_encrypt_aes():
@@ -29,3 +36,64 @@ def test_decrypt_aes():
     res = decrypt_aes(encrypted_data, key, iv)
     # then
     assert res == data
+
+
+def test_encode_jwt():
+    """
+    JWT를 정상적으로 생성하는지 테스트한다.
+    """
+    # given
+    payload = {"id": 1}
+
+    # when
+    res = encode_jwt(payload)
+
+    # then
+    expected_jwt = jwt.encode(payload=payload, key=settings.AES_KEY, algorithm="HS256")
+    assert res == expected_jwt
+
+
+def test_decode_jwt():
+    """
+    JWT를 정상적으로 디코딩하는지 테스트한다.
+    """
+    # given
+    payload = {"id": 1}
+    jwt_token = str(jwt.encode(payload=payload, key=settings.AES_KEY, algorithm="HS256"))
+
+    # when
+    res = decode_jwt(jwt_token)
+
+    # then
+    assert res == payload
+
+
+def test_decode_jwt_expired():
+    """
+    만료된 JWT를 디코딩하면 InvalidParameter 예외가 발생하는지 테스트한다.
+    """
+    with freeze_time("2024-01-01 00:00:00") as frozen_time:
+        # given
+        payload = {"id": 1, "exp": datetime.now(tz=timezone.utc) - timedelta(minutes=1)}
+        encoded_jwt = str(jwt.encode(payload=payload, key=settings.AES_KEY, algorithm="HS256"))
+
+        # when
+        frozen_time.tick(delta=timedelta(minutes=2))
+
+        # then
+        with pytest.raises(InvalidParameter) as e:
+            _ = decode_jwt(encoded_jwt)
+        assert e.value.detail == "Token expired"
+
+
+def test_decode_jwt_invalid():
+    """
+    유효하지 않은 JWT를 디코딩하면 InvalidParameter 예외가 발생하는지 테스트한다.
+    """
+    # given
+    encoded_jwt = "invalid_jwt"
+
+    # then
+    with pytest.raises(InvalidParameter) as e:
+        _ = decode_jwt(encoded_jwt)
+    assert e.value.detail == "Invalid token"

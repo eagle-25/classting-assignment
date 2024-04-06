@@ -30,7 +30,7 @@ def test_django_subscription_repo_create_new(subscriber, publisher):
     """
     # when
     repo = DjangoOrmSubscriptionRepo()
-    repo.create_subscription(subscriber_id=subscriber.id, publisher_id=publisher.id)
+    repo.create(subscriber_id=subscriber.id, publisher_id=publisher.id)
 
     # then
     subscriptions = Subscriptions.objects.filter(subscriber_id=subscriber.id, publisher_id=publisher.id)
@@ -49,7 +49,7 @@ def test_django_subscription_repo_resubscribe(subscriber, publisher):
 
     # when
     repo = DjangoOrmSubscriptionRepo()
-    repo.create_subscription(subscriber_id=subscriber.id, publisher_id=publisher.id)
+    repo.create(subscriber_id=subscriber.id, publisher_id=publisher.id)
 
     # then
     subscription = Subscriptions.objects.get(subscriber_id=subscriber.id, publisher_id=publisher.id)
@@ -68,7 +68,7 @@ def test_djagno_subscription_repo_duplicated_error(subscriber, publisher):
     # when
     with pytest.raises(SubscriptionCreateFailed):
         repo = DjangoOrmSubscriptionRepo()
-        repo.create_subscription(subscriber.id, publisher.id)
+        repo.create(subscriber.id, publisher.id)
 
 
 @pytest.mark.django_db
@@ -81,7 +81,7 @@ def test_django_subscription_repo_delete(subscriber, publisher):
 
     # when
     repo = DjangoOrmSubscriptionRepo()
-    repo.delete_subscription(subscriber.id, publisher.id)
+    repo.delete(subscriber.id, publisher.id)
 
     # then
     subscription = Subscriptions.objects.get(subscriber_id=subscriber.id, publisher_id=publisher.id)
@@ -100,7 +100,7 @@ def test_django_subscription_repo_delete_not_found(subscriber, publisher):
     # when, then
     with pytest.raises(SubscriptionNotFound) as e:
         repo = DjangoOrmSubscriptionRepo()
-        repo.delete_subscription(subscriber.id, publisher.id)
+        repo.delete(subscriber.id, publisher.id)
     assert e.value.detail == f"subscriber_id: {subscriber.id}, publisher_id: {publisher.id}"
 
 

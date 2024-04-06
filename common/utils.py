@@ -1,5 +1,11 @@
+from typing import Any
+
+import jwt
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
+
+from common import settings
+from common.exceptions import InvalidParameter
 
 
 def encrypt_aes(data: str, key: str, iv: str) -> str:
@@ -18,3 +24,16 @@ def decrypt_aes(data: str, key: str, iv: str) -> str:
     cipher = AES.new(key, AES.MODE_CBC, iv)
     decrypted_data = cipher.decrypt(data)
     return unpad(decrypted_data, AES.block_size).decode()
+
+
+def encode_jwt(payload: dict[str, Any]) -> str:
+    return str(jwt.encode(payload, key=settings.AES_KEY, algorithm="HS256"))
+
+
+def decode_jwt(jwt_token: str) -> dict[str, Any]:
+    try:
+        return jwt.decode(jwt_token, key=settings.AES_KEY, algorithms=["HS256"])
+    except jwt.ExpiredSignatureError:
+        raise InvalidParameter(detail="Token expired")
+    except jwt.InvalidTokenError:
+        raise InvalidParameter(detail="Invalid token")

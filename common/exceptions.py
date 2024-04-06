@@ -26,6 +26,7 @@ class InvalidParameter(ClientException):
 
 class ValueNotFound(ClientException):
     code = 1002
+    status = 404
     msg = "Value not found"
 
 
