@@ -10,6 +10,7 @@ from subscriptions.adapters.repos.django_subscription_repo import (
 from subscriptions.usecases.subscription_usecaes import (
     create_subscription_usecase,
     get_publisher_ids_usecase,
+    delete_subscription_usecase,
 )
 from users.domain.values import UserType
 
@@ -64,3 +65,19 @@ class SubscriptionsView(View):
             subscription_repo=DjangoOrmSubscriptionRepo(), subscriber_id=user_id
         )
         return JsonResponse({"publisher_ids": publisher_ids}, status=200)
+
+    def delete(self, request: HttpRequest, publisher_id: int) -> HttpResponse:
+        if (jwt_token := request.headers.get("Authorization")) is None:
+            raise ValueNotFound(detail="Authorization header not found")
+        user_id, user_type = _pare_user_id_and_type(jwt_token)
+        if user_type != UserType.SUBSCRIBER.value:
+            raise InvalidParameter(
+                detail="User should be SUBSCRIBER"
+            )  # 기대한 유저 타입이 아닌 경우 에러 발생
+
+        delete_subscription_usecase(
+            subscription_repo=DjangoOrmSubscriptionRepo(),
+            subscriber_id=user_id,
+            publisher_id=int(publisher_id),
+        )
+        return HttpResponse(status=204)
