@@ -1,8 +1,9 @@
-from django.urls import re_path
+from django.urls import path
 
-from schools.views import SchoolView
+from schools.views import SchoolNewsView, SchoolView
 
 urlpatterns = [
-    re_path(r"(?P<owner_id>\d+)/", SchoolView.as_view(), name="get_schools_view"),  # GET
-    re_path("", SchoolView.as_view(), name="school_view"),  # POST
+    path("<int:school_id>/news/", SchoolNewsView.as_view(), name="create_and_read_school_news_view"),  # GET, POST
+    path("news/<int:news_id>", SchoolNewsView.as_view(), name="update_and_delete_school_news_view"),  # PATCH, DELETE
+    path("", SchoolView.as_view(), name="get_or_create_school_view"),  # GET, POST
 ]

@@ -26,10 +26,15 @@ class InvalidParameter(ClientException):
 
 class ValueNotFound(ClientException):
     code = 1002
-    status = 404
     msg = "Value not found"
 
 
 class ValidationFailed(ClientException):
     code = 1003
     msg = "Validation failed"
+
+
+class Unauthorized(ClientException):
+    status = 401
+    code = 1004
+    msg = "Unauthorized"

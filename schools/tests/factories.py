@@ -1,6 +1,6 @@
 import factory
 
-from schools.models import Schools
+from schools.models import SchoolNews, Schools
 
 
 class SchoolFactory(factory.django.DjangoModelFactory):
@@ -9,3 +9,10 @@ class SchoolFactory(factory.django.DjangoModelFactory):
 
     name = factory.Faker('name')
     city = factory.Faker('city')
+
+
+class SchoolNewsFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = SchoolNews
+
+    content = factory.Faker('text')

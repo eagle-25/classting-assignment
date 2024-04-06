@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# mypy: ignore-errors
 """Django's command-line utility for administrative tasks."""
 import os
 import sys

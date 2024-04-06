@@ -33,6 +33,10 @@ build-backend = "poetry.core.masonry.api"
 [tool.mypy]
 python_version = "3.11"
 allow_redefinition = true
+disallow_incomplete_defs = true
+disallow_untyped_calls = true
+disallow_untyped_decorators = true
+disallow_untyped_defs = true
 plugins = ["mypy_django_plugin.main"]
 
 exclude = [

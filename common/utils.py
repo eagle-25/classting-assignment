@@ -1,8 +1,10 @@
+import json
 from typing import Any
 
 import jwt
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
+from django.http import HttpRequest
 
 from common import settings
 from common.exceptions import InvalidParameter
@@ -37,3 +39,10 @@ def decode_jwt(jwt_token: str) -> dict[str, Any]:
         raise InvalidParameter(detail="Token expired")
     except jwt.InvalidTokenError:
         raise InvalidParameter(detail="Invalid token")
+
+
+def parse_body(request: HttpRequest) -> dict[str, Any]:
+    try:
+        return json.loads(request.body)
+    except json.JSONDecodeError:
+        raise InvalidParameter(detail="Invalid body")

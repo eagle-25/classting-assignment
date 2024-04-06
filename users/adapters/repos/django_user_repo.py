@@ -13,7 +13,7 @@ class DjangoOrmUserRepo(IUserRepo):
         except Users.DoesNotExist:
             raise UserNotFound(detail="User not found")
 
-    def create(self, entity: UserEntity):
+    def create(self, entity: UserEntity) -> None:
         try:
             Users.from_entity(entity).save()
         except IntegrityError:
