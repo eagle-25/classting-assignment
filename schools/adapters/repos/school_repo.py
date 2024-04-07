@@ -1,5 +1,6 @@
 from django.db import IntegrityError
 
+from schools.domain.commands import ListSchoolsCmd
 from schools.domain.entities import SchoolEntity, SchoolNewsEntity
 from schools.domain.exceptions import (
     SchoolCreateFailed,
@@ -20,11 +21,18 @@ class DjangoOrmSchoolsRepo(ISchoolRepo):
         except IntegrityError:
             raise SchoolCreateFailed(detail="Already exists")
 
-    def list_school(self, owner_id: int) -> list[SchoolEntity]:
+    def list_schools(self, cmd: ListSchoolsCmd) -> list[SchoolEntity]:
         """
         학교 목록을 반환한다. id 기준 오름차순으로 정렬한다.
         """
-        return [x.to_entity() for x in Schools.objects.filter(owner_id=owner_id).order_by('id')]
+        schools = Schools.objects.all()
+        if cmd.school_name:
+            schools = schools.filter(name__icontains=cmd.school_name)
+        if cmd.city:
+            schools = schools.filter(city__icontains=cmd.city)
+        if cmd.owner_id:
+            schools = schools.filter(owner_id=cmd.owner_id)
+        return [x.to_entity() for x in schools.order_by('id')]
 
     def create_school_news(self, entity: SchoolNewsEntity) -> None:
         """

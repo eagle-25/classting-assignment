@@ -1,6 +1,6 @@
-from collections.abc import Iterable
 from typing import Protocol
 
+from schools.domain.commands import ListSchoolsCmd
 from schools.domain.entities import SchoolEntity, SchoolNewsEntity
 
 
@@ -11,7 +11,7 @@ class ISchoolRepo(Protocol):
         """
         ...
 
-    def list_school(self, owner_id: int) -> Iterable[SchoolEntity]:
+    def list_schools(self, cmd: ListSchoolsCmd) -> list[SchoolEntity]:
         """
         학교 목록을 반환한다. id 기준 오름차순으로 정렬한다.
         """

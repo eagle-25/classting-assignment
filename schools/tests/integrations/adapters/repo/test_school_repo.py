@@ -1,6 +1,7 @@
 import pytest
 
 from schools.adapters.repos.school_repo import DjangoOrmSchoolsRepo
+from schools.domain.commands import ListSchoolsCmd
 from schools.domain.exceptions import (
     SchoolCreateFailed,
     SchoolNewsNotFound,
@@ -19,17 +20,18 @@ def test_django_school_repo_list_schools():
     """
     # given
     user: Users = UserFactory()
-    school1: Schools = SchoolFactory(owner_id=user.id)
-    school2: Schools = SchoolFactory(owner_id=user.id)
+    school1: Schools = SchoolFactory(owner_id=user.id, city="Seoul", name="SNU")
+    SchoolFactory(owner_id=user.id, city="Seoul", name="KU")
+    SchoolFactory(owner_id=user.id, city="Busan", name="PNU")
 
     # when
     repo = DjangoOrmSchoolsRepo()
-    schools = repo.list_school(owner_id=user.id)
+    cmd = ListSchoolsCmd(owner_id=user.id, city="Seoul", school_name="SNU")
+    schools = repo.list_schools(cmd=cmd)
 
     # then
-    assert len(schools) == 2
+    assert len(schools) == 1
     assert schools[0] == school1.to_entity()
-    assert schools[1] == school2.to_entity()
 
 
 @pytest.mark.django_db

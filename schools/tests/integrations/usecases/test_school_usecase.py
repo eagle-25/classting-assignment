@@ -2,6 +2,7 @@ import pytest
 
 from common.exceptions import Unauthorized
 from schools.adapters.repos.school_repo import DjangoOrmSchoolsRepo
+from schools.domain.commands import ListSchoolsCmd
 from schools.models import SchoolNews, Schools
 from schools.tests.factories import SchoolFactory, SchoolNewsFactory
 from schools.usecases.school_usecase import (
@@ -43,7 +44,8 @@ def test_list_schools_usecase():
     school2 = SchoolFactory(owner_id=user.id)
 
     # when
-    schools = list_schools_usecase(school_repo=DjangoOrmSchoolsRepo(), owner_id=user.id)
+    cmd = ListSchoolsCmd(owner_id=user.id)
+    schools = list_schools_usecase(school_repo=DjangoOrmSchoolsRepo(), cmd=cmd)
 
     # then
     assert len(schools) == 2

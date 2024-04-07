@@ -1,4 +1,6 @@
 # Create your views here.
+import dataclasses
+
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.utils.decorators import method_decorator
 from django.views import View
@@ -31,14 +33,12 @@ class SubscriptionsView(View):
         return HttpResponse(schools)
 
     @method_decorator(jwt_login)
-    def delete(self, request: HttpRequest, user_id: int) -> HttpResponse:
+    def delete(self, request: HttpRequest, user_id: int, school_id: int) -> HttpResponse:
         """
         구독 삭제 API
         """
-        if (school_id := request.POST.get('school_id')) is None:
-            raise ValueNotFound(detail="school_id")
         repo = DjangoOrmSubscriptionsRepo()
-        repo.cancel_subscription(user_id=user_id, school_id=int(school_id))
+        repo.cancel_subscription(user_id=user_id, school_id=school_id)
         return HttpResponse(status=204)
 
 
@@ -52,4 +52,5 @@ def list_school_news(request: HttpRequest, user_id: int) -> HttpResponse:
     page_cnt, news = DjangoOrmSubscriptionsRepo().iter_subscribed_schools_news(
         user_id=user_id, page_index=page, page_size=NEWS_PAGE_SIZE
     )
+    news = [dataclasses.asdict(news) for news in news]
     return JsonResponse({"page_size": NEWS_PAGE_SIZE, "total_page_cnt": page_cnt, "cur_page_index": page, "news": news})

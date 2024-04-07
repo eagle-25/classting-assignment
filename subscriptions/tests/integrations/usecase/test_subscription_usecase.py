@@ -37,11 +37,12 @@ def test_cancel_subscription_usecase() -> None:
 
     # When
     repo = DjangoOrmSubscriptionsRepo()
-    repo.delete_subscription(user_id=subscriber.id, school_id=school.id)
+    repo.cancel_subscription(user_id=subscriber.id, school_id=school.id)
 
     # Then
-    subscriptions = Subscriptions.objects.filter(user_id=subscriber.id, school_id=school.id, canceled_at__isnull=False)
-    assert len(subscriptions) == 0
+    subscriptions = Subscriptions.objects.filter(user_id=subscriber.id, school_id=school.id)
+    assert len(subscriptions) == 1
+    assert subscriptions[0].canceled_at is not None
 
 
 @pytest.mark.django_db

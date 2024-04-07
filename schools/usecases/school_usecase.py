@@ -1,4 +1,5 @@
 from common.exceptions import Unauthorized
+from schools.domain.commands import ListSchoolsCmd
 from schools.domain.entities import SchoolEntity, SchoolNewsEntity
 from schools.domain.interfaces import ISchoolRepo
 
@@ -10,11 +11,11 @@ def create_school_usecase(school_repo: ISchoolRepo, owner_id: int, name: str, ci
     school_repo.create_school(entity=SchoolEntity(owner_id=owner_id, name=name, city=city))
 
 
-def list_schools_usecase(school_repo: ISchoolRepo, owner_id: int) -> list[SchoolEntity]:
+def list_schools_usecase(school_repo: ISchoolRepo, cmd: ListSchoolsCmd) -> list[SchoolEntity]:
     """
-    owner_id에 해당하는 학교들을 조회하는 유스케이스
+    해당하는 학교들을 조회하는 유스케이스
     """
-    return list(school_repo.list_school(owner_id=owner_id))
+    return list(school_repo.list_schools(cmd))
 
 
 def create_school_news_usecase(school_repo: ISchoolRepo, owner_id: int, school_id: int, content: str) -> None:

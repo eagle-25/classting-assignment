@@ -8,6 +8,7 @@ from common.decorators import jwt_login
 from common.exceptions import ValueNotFound
 from common.utils import parse_body
 from schools.adapters.repos.school_repo import DjangoOrmSchoolsRepo
+from schools.domain.commands import ListSchoolsCmd
 from schools.usecases.school_usecase import (
     create_school_news_usecase,
     create_school_usecase,
@@ -28,19 +29,27 @@ class SchoolView(View):
             raise ValueNotFound(detail="school_name")
         if (city := request.POST.get('city')) is None:
             raise ValueNotFound(detail="city")
-        if (owner_id := request.POST.get('owner_id')) is None:
-            raise ValueNotFound(detail="owner_id")
-        create_school_usecase(school_repo=DjangoOrmSchoolsRepo(), owner_id=int(owner_id), name=school_name, city=city)
+        create_school_usecase(school_repo=DjangoOrmSchoolsRepo(), owner_id=user_id, name=school_name, city=city)
         return HttpResponse(status=201)
 
     @method_decorator(jwt_login)
     def get(self, request: HttpRequest, user_id: int) -> HttpResponse:
         """
-        owner가 가지는 학교들을 조회하는 API View
+        학교들을 조회하는 API View
         """
-        if (owner_id := request.GET.get('owner_id')) is None:
-            raise ValueNotFound(detail="owner_id")
-        schools = list_schools_usecase(school_repo=DjangoOrmSchoolsRepo(), owner_id=int(owner_id))
+
+        def _get_int_or_none(data: str) -> int | None:
+            try:
+                return int(data)
+            except ValueError:
+                return None
+
+        cmd = ListSchoolsCmd(
+            owner_id=_get_int_or_none(request.GET.get('owner_id', '')),
+            school_name=request.GET.get('school_name'),
+            city=request.GET.get('city'),
+        )
+        schools = list_schools_usecase(school_repo=DjangoOrmSchoolsRepo(), cmd=cmd)
         schools = [dataclasses.asdict(school) for school in schools]
         return JsonResponse(data={'schools': schools}, status=200)
 

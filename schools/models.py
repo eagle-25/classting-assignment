@@ -8,8 +8,8 @@ from schools.domain.entities import SchoolEntity, SchoolNewsEntity
 class Schools(models.Model):
     id = models.SmallAutoField(primary_key=True)
     owner = models.ForeignKey('users.Users', on_delete=models.DO_NOTHING, db_index=True)
-    name = models.CharField(max_length=20, null=False)
-    city = models.CharField(max_length=30, null=False)
+    name = models.CharField(max_length=20, null=False, db_index=True)
+    city = models.CharField(max_length=30, null=False, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
