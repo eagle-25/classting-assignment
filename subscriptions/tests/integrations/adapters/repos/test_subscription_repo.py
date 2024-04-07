@@ -12,6 +12,7 @@ from subscriptions.domain.exceptions import (
 )
 from subscriptions.models import Subscriptions
 from subscriptions.tests.factories import SubscriptionFactory
+from users.domain.exceptions import UserNotFound
 from users.models import Users
 from users.tests.factories import UserFactory
 
@@ -92,8 +93,9 @@ def test_django_subscription_repo_already_subscribed(school, subscriber, subscri
     SubscriptionFactory(user=subscriber, school=school)
 
     # when, then
-    with pytest.raises(SubscriptionCreateFailed):
+    with pytest.raises(SubscriptionCreateFailed) as e:
         subscription_repo.create_subscription(user_id=subscriber.id, school_id=school.id)
+    assert e.value.detail == "Already subscribed"
 
 
 @pytest.mark.django_db
@@ -194,3 +196,13 @@ def test_iter_subscribed_schools_news(school, subscriber, subscription_repo):
         assert page_cnt == 1
         assert len(news) == 2
         assert [x.id for x in news] == [news2.id, news1.id]  # 최신순 반환 여부 테스트
+
+
+@pytest.mark.django_db
+def test_iter_subscribed_school_news_user_not_found(subscription_repo):
+    """
+    유저를 찾을 수 없는 경우, SubscriptionCreateFailed 예외가 발생한다.
+    """
+    # when, then
+    with pytest.raises(UserNotFound):
+        subscription_repo.iter_subscribed_schools_news(user_id=9999, page_index=1, page_count=10)
