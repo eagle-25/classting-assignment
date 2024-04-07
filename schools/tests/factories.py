@@ -7,7 +7,7 @@ class SchoolFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Schools
 
-    name = factory.Faker('name')
+    name = factory.Faker('word')
     city = factory.Faker('city')
 
 

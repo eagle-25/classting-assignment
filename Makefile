@@ -8,17 +8,20 @@ clean-pycache:
 build:
 	docker-compose -f $(COMPOSE_FILE) build
 
-run:
-	docker-compose -f $(COMPOSE_FILE) up --build
-
-test:
-	docker-compose -f $(COMPOSE_FILE) run --build --rm dev bash -c "pytest -s"
+up:
+	docker-compose -f $(COMPOSE_FILE) up --build app --remove-orphans
 
 shell:
-	docker-compose -f $(COMPOSE_FILE) run --build --rm dev bash
+	docker-compose -f $(COMPOSE_FILE) run --build --rm app bash
+
+test:
+	docker-compose -f $(COMPOSE_FILE) run --build --rm app bash -c "pytest -s"
+
+test-shell:
+	docker-compose -f $(COMPOSE_FILE) run --build --rm app bash
 
 test-watch:
-	docker-compose -f $(COMPOSE_FILE) run --build --rm dev bash -c "ptw --poll"
+	docker-compose -f $(COMPOSE_FILE) run --build --rm app bash -c "ptw --poll"
 
 mypy:
 	poetry run mypy .

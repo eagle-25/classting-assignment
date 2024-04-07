@@ -1,6 +1,6 @@
 version: '3.8'
 services:
-  dev:
+  app:
     image: classting-server
     build:
       context: .
@@ -14,4 +14,22 @@ services:
     environment:
       DJANGO_SETTINGS_MODULE: common.settings
     init: true
-    command: "python manage.py runserver 0.0.0.0:9001"
+    depends_on:
+      - mysql
+    command: |
+      sh -c "./.wait-for-it.sh mysql:3306 --
+             python manage.py migrate --noinput --
+             python manage.py runserver 0.0.0.0:9001"
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_DATABASE: classting
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - ./db/mysql-init/:/docker-entrypoint-initdb.d
