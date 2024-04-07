@@ -188,7 +188,7 @@ def test_iter_subscribed_schools_news(school, subscriber, subscription_repo):
 
         # when
         page_cnt, news = subscription_repo.iter_subscribed_schools_news(
-            user_id=subscriber.id, page_index=1, page_count=10
+            user_id=subscriber.id, page_index=1, page_size=10
         )
         news = list(news)
 
@@ -205,4 +205,4 @@ def test_iter_subscribed_school_news_user_not_found(subscription_repo):
     """
     # when, then
     with pytest.raises(UserNotFound):
-        subscription_repo.iter_subscribed_schools_news(user_id=9999, page_index=1, page_count=10)
+        subscription_repo.iter_subscribed_schools_news(user_id=9999, page_index=1, page_size=10)

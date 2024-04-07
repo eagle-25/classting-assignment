@@ -81,7 +81,7 @@ class DjangoOrmSubscriptionsRepo(ISubscriptionsRepo):
             subscription.save()
 
     def iter_subscribed_schools_news(
-        self, user_id: int, page_index: int = 1, page_count: int = 10
+        self, user_id: int, page_index: int = 1, page_size: int = 10
     ) -> tuple[int, Iterable[SchoolNewsEntity]]:  # page_cnt, news
         """
         구독한 학교들의 소식을 최신순으로 가져온다. 소식은 구독을 시작한 시점 ~ 취소한 시점까지만 가져와야 한다.
@@ -94,11 +94,12 @@ class DjangoOrmSubscriptionsRepo(ISubscriptionsRepo):
         subscriptions = Subscriptions.objects.filter(user=user)
         news = SchoolNews.objects.none()
         for subscription in subscriptions:
+
             news |= SchoolNews.objects.filter(
                 school=subscription.school,
                 created_at__gte=subscription.subscribed_at,
-                created_at__lte=subscription.canceled_at,
+                created_at__lte=subscription.canceled_at or datetime.now(tz=timezone.utc),
             )
         news = news.order_by('-created_at')
-        paginator = Paginator(news, page_count)
+        paginator = Paginator(news, page_size)
         return paginator.num_pages, [x.to_entity() for x in paginator.page(page_index).object_list]
