@@ -30,9 +30,9 @@ def create_school_news_usecase(school_repo: ISchoolRepo, owner_id: int, school_i
 
 def list_school_news_usecase(school_repo: ISchoolRepo, school_id: int) -> list[SchoolNewsEntity]:
     """
-    school_id에 해당하는 학교 소식들을 조회하는 유스케이스
+    학교 소식들을 조회해 최신순으로 반환하는 유스케이스
     """
-    return list(school_repo.list_school_news(school_id=school_id))
+    return school_repo.list_school_news(school_id=school_id)
 
 
 def update_school_news_usecase(school_repo: ISchoolRepo, owner_id: int, news_id: int, content: str) -> SchoolNewsEntity:
