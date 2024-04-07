@@ -10,7 +10,7 @@ services:
     volumes:
       - .:/app
     env_file:
-      - ./.envs/test_env
+      - ./.envs/local_env
     environment:
       DJANGO_SETTINGS_MODULE: common.settings
     init: true
@@ -20,6 +20,7 @@ services:
       sh -c "./.wait-for-it.sh mysql:3306 --
              python manage.py migrate --noinput --
              python manage.py runserver 0.0.0.0:9001"
+
   mysql:
     image: mysql:8.0
     container_name: mysql
@@ -33,3 +34,16 @@ services:
       - --collation-server=utf8mb4_unicode_ci
     volumes:
       - ./db/mysql-init/:/docker-entrypoint-initdb.d
+
+  test:
+    image: classting-server
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+    env_file:
+      - ./.envs/test_env
+    environment:
+      DJANGO_SETTINGS_MODULE: common.settings
+    init: true

@@ -15,13 +15,13 @@ shell:
 	docker-compose -f $(COMPOSE_FILE) run --build --rm app bash
 
 test:
-	docker-compose -f $(COMPOSE_FILE) run --build --rm app bash -c "pytest -s"
+	docker-compose -f $(COMPOSE_FILE) run --build --rm test bash -c "pytest -s"
 
 test-shell:
-	docker-compose -f $(COMPOSE_FILE) run --build --rm app bash
+	docker-compose -f $(COMPOSE_FILE) run --build --rm test bash
 
 test-watch:
-	docker-compose -f $(COMPOSE_FILE) run --build --rm app bash -c "ptw --poll"
+	docker-compose -f $(COMPOSE_FILE) run --build --rm test bash -c "ptw --poll"
 
 mypy:
 	poetry run mypy .
