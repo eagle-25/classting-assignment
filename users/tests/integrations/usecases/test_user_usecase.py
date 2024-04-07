@@ -1,21 +1,22 @@
 from datetime import datetime, timedelta, timezone
 
 import pytest
+from pytest_mock import MockerFixture
 
 from common import settings
 from common.utils import encode_jwt, encrypt_aes
 from users.adapters.repos.django_user_repo import DjangoOrmUserRepo
-from users.models import Users
+from users.domain.entities import UserEntity
 from users.tests.factories import UserFactory
 from users.usecases.user_usecase import sign_in_usecase, sign_up_usecase
 
 
-@pytest.mark.django_db
-def test_sign_up_usecase():
+def test_sign_up_usecase(mocker: MockerFixture):
     """
-    email과 password로 사용자를 생성하는지 테스트한다. 암호는 암호화 되어 저장되었는지 테스트한다.
+    사용자 생성 로직을 기대한대로 호출하는지 테스트한다.
     """
     # given
+    mocked_create = mocker.patch.object(DjangoOrmUserRepo, "create")
     email = "abc@example.com"
     password = "password"
 
@@ -28,7 +29,8 @@ def test_sign_up_usecase():
 
     # then
     encrypted_password = encrypt_aes(data=password, key=settings.AES_KEY, iv=settings.AES_IV)
-    assert Users.objects.filter(email=email, password=encrypted_password).exists()
+    entity = UserEntity(email=email, password=encrypted_password)
+    mocked_create.assert_called_once_with(entity=entity)
 
 
 @pytest.mark.django_db

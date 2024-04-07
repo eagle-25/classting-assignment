@@ -24,6 +24,7 @@ django-tests = "^1.8.3"
 codecov = "^2.1.13"
 pytest-cov = "^5.0.0"
 pytest-freezegun = "^0.4.2"
+pytest-mock = "^3.14.0"
 
 
 [build-system]

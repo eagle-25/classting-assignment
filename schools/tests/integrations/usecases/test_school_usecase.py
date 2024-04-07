@@ -1,63 +1,99 @@
 import pytest
+from pytest_mock import MockFixture
 
 from common.exceptions import Unauthorized
 from schools.adapters.repos.school_repo import DjangoOrmSchoolsRepo
-from schools.tests.factories import SchoolFactory, SchoolNewsFactory
+from schools.domain.entities import SchoolNewsEntity
 from schools.usecases.school_usecase import (
     create_school_news_usecase,
     delete_school_news_usecase,
     update_school_news_usecase,
 )
-from users.tests.factories import UserFactory
 
 
-@pytest.mark.django_db
-def create_school_news_usecase_with_not_owned_school():
+def test_create_school_news_usecase_with_not_owned_school(mocker: MockFixture):
     """
     소유하지 않은 학교에 소식을 생성할 수 없는지 테스트
     """
     # given
-    owner = UserFactory()
-    school = SchoolFactory(owner_id=owner.id)
+    mocker.patch.object(DjangoOrmSchoolsRepo, "is_owned_school", return_value=False)
 
     # when
-    not_owner = UserFactory()
-
     with pytest.raises(Unauthorized):
         repo = DjangoOrmSchoolsRepo()
-        create_school_news_usecase(school_repo=repo, owner_id=not_owner.id, school_id=school.id, content="")
+        create_school_news_usecase(repo, owner_id=1, school_id=1, content="content")
 
 
-@pytest.mark.django_db
-def test_update_school_news_usecase_with_not_owned_news():
+def test_create_school_news_usecase(mocker: MockFixture):
+    """
+    소유한 학교의 소식을 생성할 때, 소식 생성 로직을 기대한대로 호출하는지 테스트
+    """
+    # given
+    mocker.patch.object(DjangoOrmSchoolsRepo, "is_owned_school", return_value=True)
+    create_action = mocker.patch.object(DjangoOrmSchoolsRepo, "create_school_news")
+
+    # when
+    repo = DjangoOrmSchoolsRepo()
+    create_school_news_usecase(repo, owner_id=1, school_id=1, content="content")
+
+    # then
+    entity = SchoolNewsEntity(school_id=1, content='content')
+    create_action.assert_called_once_with(entity=entity)
+
+
+def test_update_school_news_usecase_with_not_owned_news(mocker: MockFixture):
     """
     소유하지 않은 소식을 수정할 수 없는지 테스트
     """
     # given
-    owner = UserFactory()
-    not_owner = UserFactory()
-    school = SchoolFactory(owner_id=owner.id)
-    news = SchoolNewsFactory(school_id=school.id)
-    content = "new content"
+    mocker.patch.object(DjangoOrmSchoolsRepo, "is_owned_news", return_value=False)
 
     # when
     with pytest.raises(Unauthorized):
         repo = DjangoOrmSchoolsRepo()
-        update_school_news_usecase(school_repo=repo, owner_id=not_owner.id, news_id=news.id, content=content)
+        update_school_news_usecase(school_repo=repo, owner_id=1, news_id=2, content="")
 
 
-@pytest.mark.django_db
-def test_delete_school_news_usecase_with_not_owned_news():
+def test_update_school_news_usecase(mocker: MockFixture):
+    """
+    소유한 소식을 수정할 때, 소식 수정 로직을 기대한대로 호출하는지 테스트
+    """
+    # given
+    mocker.patch.object(DjangoOrmSchoolsRepo, "is_owned_news", return_value=True)
+    update_action = mocker.patch.object(DjangoOrmSchoolsRepo, "update_school_news")
+
+    # when
+    repo = DjangoOrmSchoolsRepo()
+    update_school_news_usecase(school_repo=repo, owner_id=1, news_id=2, content="content")
+
+    # then
+    update_action.assert_called_once_with(news_id=2, content="content")
+
+
+def test_delete_school_news_usecase_with_not_owned_news(mocker: MockFixture):
     """
     소유하지 않은 소식을 삭제할 수 없는지 테스트
     """
     # given
-    owner = UserFactory()
-    not_owner = UserFactory()
-    school = SchoolFactory(owner_id=owner.id)
-    news = SchoolNewsFactory(school_id=school.id)
+    mocker.patch.object(DjangoOrmSchoolsRepo, "is_owned_news", return_value=False)
 
     # when
     with pytest.raises(Unauthorized):
         repo = DjangoOrmSchoolsRepo()
-        delete_school_news_usecase(school_repo=repo, owner_id=not_owner.id, news_id=news.id)
+        delete_school_news_usecase(school_repo=repo, owner_id=1, news_id=2)
+
+
+def test_delete_school_news_usecase(mocker: MockFixture):
+    """
+    소유한 소식을 삭제할 때, 소식 삭제 로직을 기대한대로 호출하는지 테스트
+    """
+    # given
+    mocker.patch.object(DjangoOrmSchoolsRepo, "is_owned_news", return_value=True)
+    delete_action = mocker.patch.object(DjangoOrmSchoolsRepo, "delete_school_news")
+
+    # when
+    repo = DjangoOrmSchoolsRepo()
+    delete_school_news_usecase(school_repo=repo, owner_id=1, news_id=2)
+
+    # then
+    delete_action.assert_called_once_with(news_id=2)
