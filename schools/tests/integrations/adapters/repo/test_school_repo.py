@@ -45,7 +45,7 @@ def test_django_school_repo_create_school():
 
     # when
     repo = DjangoOrmSchoolsRepo()
-    repo.create_school(entity=school)
+    repo.create_school(owner_id=user.id, school_name=school.name, city=school.city)
 
     # then
     assert Schools.objects.filter(owner_id=user.id, name=school.name, city=school.city).exists()
@@ -63,7 +63,7 @@ def test_django_school_repo_create_school_failed():
     # when, then
     repo = DjangoOrmSchoolsRepo()
     with pytest.raises(SchoolCreateFailed) as e:
-        repo.create_school(entity=school)
+        repo.create_school(owner_id=user.id, school_name=school.name, city=school.city)
     assert e.value.detail == "Already exists"
 
 

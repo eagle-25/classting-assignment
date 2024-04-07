@@ -1,12 +1,12 @@
 from typing import Protocol
 
 from schools.domain.commands import ListSchoolsCmd
-from schools.domain.entities import SchoolEntity, SchoolNewsEntity
-from schools.values import SchoolDTO
+from schools.domain.entities import SchoolNewsEntity
+from schools.domain.values import SchoolDTO
 
 
 class ISchoolRepo(Protocol):
-    def create_school(self, entity: SchoolEntity) -> None:
+    def create_school(self, owner_id: int, school_name: str, city: str) -> None:
         """
         학교를 생성한다.
         """

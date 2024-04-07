@@ -8,16 +8,17 @@ from schools.domain.exceptions import (
     SchoolNotFound,
 )
 from schools.domain.interfaces import ISchoolRepo
+from schools.domain.values import SchoolDTO
 from schools.models import SchoolNews, Schools
-from schools.values import SchoolDTO
 
 
 class DjangoOrmSchoolsRepo(ISchoolRepo):
-    def create_school(self, entity: SchoolEntity) -> None:
+    def create_school(self, owner_id: int, school_name: str, city: str) -> None:
         """
         학교를 생성한다.
         """
         try:
+            entity = SchoolEntity(owner_id=owner_id, name=school_name, city=city)
             Schools.from_entity(entity=entity).save()
         except IntegrityError:
             raise SchoolCreateFailed(detail="Already exists")

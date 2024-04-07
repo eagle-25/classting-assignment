@@ -11,10 +11,7 @@ from schools.adapters.repos.school_repo import DjangoOrmSchoolsRepo
 from schools.domain.commands import ListSchoolsCmd
 from schools.usecases.school_usecase import (
     create_school_news_usecase,
-    create_school_usecase,
     delete_school_news_usecase,
-    list_school_news_usecase,
-    list_schools_usecase,
     update_school_news_usecase,
 )
 
@@ -29,7 +26,8 @@ class SchoolView(View):
             raise ValueNotFound(detail="school_name")
         if (city := request.POST.get('city')) is None:
             raise ValueNotFound(detail="city")
-        create_school_usecase(school_repo=DjangoOrmSchoolsRepo(), owner_id=user_id, name=school_name, city=city)
+        repo = DjangoOrmSchoolsRepo()
+        repo.create_school(owner_id=user_id, school_name=school_name, city=city)
         return HttpResponse(status=201)
 
     @method_decorator(jwt_login)
@@ -44,13 +42,12 @@ class SchoolView(View):
             except ValueError:
                 return None
 
-        repo = DjangoOrmSchoolsRepo()
         cmd = ListSchoolsCmd(
             owner_id=_get_int_or_none(request.GET.get('owner_id', '')),
             school_name=request.GET.get('school_name'),
             city=request.GET.get('city'),
         )
-        schools = list_schools_usecase(school_repo=repo, cmd=cmd)
+        schools = DjangoOrmSchoolsRepo().list_schools(cmd=cmd)
         schools = [dataclasses.asdict(school) for school in schools]
         return JsonResponse(data={'schools': schools}, status=200)
 
@@ -72,7 +69,8 @@ class SchoolNewsView(View):
         """
         학교별 소식들을 조회하는 API View
         """
-        school_news = list_school_news_usecase(school_repo=DjangoOrmSchoolsRepo(), school_id=int(school_id))
+        repo = DjangoOrmSchoolsRepo()
+        school_news = repo.list_school_news(school_id=int(school_id))
         school_news = [dataclasses.asdict(news) for news in school_news]
         return JsonResponse(data={'school_news': school_news}, status=200)
 
