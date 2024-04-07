@@ -11,11 +11,17 @@ build:
 up:
 	docker-compose -f $(COMPOSE_FILE) up --build app --remove-orphans
 
-shell:
-	docker-compose -f $(COMPOSE_FILE) run --build --rm app bash
-
 test:
 	docker-compose -f $(COMPOSE_FILE) run --build --rm test bash -c "pytest -s"
+
+lint:
+	poetry run isort .
+	poetry run black .
+	poetry run flake8 .
+	poetry run mypy .
+
+shell:
+	docker-compose -f $(COMPOSE_FILE) run --build --rm app bash
 
 test-shell:
 	docker-compose -f $(COMPOSE_FILE) run --build --rm test bash
