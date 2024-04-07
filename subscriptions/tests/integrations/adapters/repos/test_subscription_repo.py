@@ -3,6 +3,7 @@ from datetime import datetime, timedelta, timezone
 import pytest
 from freezegun import freeze_time
 
+from schools.domain.exceptions import SchoolNotFound
 from schools.models import Schools
 from schools.tests.factories import SchoolFactory, SchoolNewsFactory
 from subscriptions.adapters.repos.subscriptions_repo import DjangoOrmSubscriptionsRepo
@@ -113,6 +114,30 @@ def test_django_subscription_repo_list_subscription(school, subscriber, subscrip
     assert len(subscriptions) == 1
     assert subscriptions[0].user_id == subscriber.id
     assert subscriptions[0].school_id == school.id
+
+
+@pytest.mark.django_db
+def test_django_subscription_repo_create_no_school():
+    """
+    존재하지 않는 학교에 구독을 시도한 경우, SchoolNotFound 예외가 발생한다.
+    """
+    # given
+    subscriber = UserFactory()
+
+    # when, then
+    with pytest.raises(SchoolNotFound):
+        DjangoOrmSubscriptionsRepo().create_subscription(user_id=subscriber.id, school_id=9999)
+
+
+@pytest.mark.django_db
+def test_django_subscription_repo_create_own_school(school, subscription_repo):
+    """
+    자신이 소유한 학교에 구독을 시도한 경우, SubscriptionCreateFailed 예외가 발생한다.
+    """
+    # when, then
+    with pytest.raises(SubscriptionCreateFailed) as e:
+        subscription_repo.create_subscription(user_id=school.owner.id, school_id=school.id)
+    assert e.value.detail == "Cannot subscribe to own school"
 
 
 @pytest.mark.django_db

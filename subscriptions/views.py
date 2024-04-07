@@ -1,4 +1,3 @@
-# Create your views here.
 import dataclasses
 
 from django.http import HttpRequest, HttpResponse, JsonResponse
@@ -29,8 +28,12 @@ class SubscriptionsView(View):
         구독 목록 조회 API
         """
         repo = DjangoOrmSubscriptionsRepo()
-        schools = repo.list_subscriptions(user_id=user_id)
-        return HttpResponse(schools)
+        subscriptions = repo.list_subscriptions(user_id=user_id)
+        subscriptions = [
+            {"school_id": subscription.school_id, "subscribed_at": subscription.subscribed_at}
+            for subscription in subscriptions
+        ]
+        return JsonResponse({"subscriptions": subscriptions})
 
     @method_decorator(jwt_login)
     def delete(self, request: HttpRequest, user_id: int, school_id: int) -> HttpResponse:

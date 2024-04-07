@@ -5,7 +5,8 @@ from django.core.paginator import Paginator
 from django.db import IntegrityError
 
 from schools.domain.entities import SchoolNewsEntity
-from schools.models import SchoolNews
+from schools.domain.exceptions import SchoolNotFound
+from schools.models import SchoolNews, Schools
 from subscriptions.domain.entities import SubscriptionEntity
 from subscriptions.domain.exceptions import (
     SubscriptionCancelFailed,
@@ -46,16 +47,24 @@ class DjangoOrmSubscriptionsRepo(ISubscriptionsRepo):
             subscription_.canceled_at = None
             subscription_.save()
 
-        # 기 구독 여부 조회
-        subscription = Subscriptions.objects.filter(user_id=user_id, school_id=school_id).first()
-        # 최초 구독 --> 새로 생성
-        if subscription is None:
-            _create_subscription(user_id, school_id)
-        # 재구독 --> 구독 취소 시간 초기화
-        elif subscription.canceled_at is not None:
-            _reactivate_subscription(subscription)
-        # 이미 구독한 경우 --> 에러 발생
+        def _get_school(school_id_: int) -> Schools:
+            try:
+                return Schools.objects.get(id=school_id_)
+            except Schools.DoesNotExist:
+                raise SchoolNotFound
+
+        # 본인 소유 학교인지 확인
+        if (school := _get_school(school_id)).owner_id == user_id:
+            raise SubscriptionCreateFailed(detail="Cannot subscribe to own school")
         else:
+            subscription = Subscriptions.objects.filter(user_id=user_id, school_id=school).first()
+
+        # 구독 생성
+        if subscription is None:  # 최초 구독 --> 새로 생성
+            _create_subscription(user_id, school_id)
+        elif subscription.canceled_at is not None:  # 재구독 --> 구독 취소 시간 초기화
+            _reactivate_subscription(subscription)
+        else:  # 이미 구독한 경우 --> 에러 발생
             raise SubscriptionCreateFailed(detail="Already subscribed")
 
     def list_subscriptions(self, user_id: int) -> list[SubscriptionEntity]:
