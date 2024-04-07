@@ -15,6 +15,8 @@ from pathlib import Path
 
 import pymysql
 
+SERVER_ENV = os.environ.get('SERVER_ENV', 'local')
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -135,3 +137,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # AES Key
 AES_KEY = os.environ.get("API_AES_KEY", "")
 AES_IV = AES_KEY
+
+if SERVER_ENV == "test":
+    from common.settings_test import *  # noqa: F401, F403
+else:
+    ...

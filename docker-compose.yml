@@ -10,7 +10,7 @@ services:
     volumes:
       - .:/app
     env_file:
-      - ./.envs/local_django_env
+      - ./.envs/test_env
     environment:
       DJANGO_SETTINGS_MODULE: common.settings
     init: true

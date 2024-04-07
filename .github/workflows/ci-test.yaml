@@ -59,7 +59,7 @@ jobs:
           key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock')}}
       - name: Run tests
         run: |
-          export $(cat .envs/local_django_env | xargs)
+          export $(cat .envs/test_env | xargs)
           poetry run pytest --cov . --cov-config ./coverage.ini --cov-report xml:./coverage.xml
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4.0.1
