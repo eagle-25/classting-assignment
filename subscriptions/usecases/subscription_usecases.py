@@ -14,14 +14,14 @@ def list_subscription_usecase(subscription_repo: ISubscriptionsRepo, user_id: in
     """
     구독한 학교 목록을 조회하는 유스케이스
     """
-    return subscription_repo.list_subscription(user_id=user_id)
+    return subscription_repo.list_subscriptions(user_id=user_id)
 
 
 def delete_subscription_usecase(subscription_repo: ISubscriptionsRepo, user_id: int, school_id: int) -> None:
     """
     구독한 학교를 삭제하는 유스케이스
     """
-    subscription_repo.delete_subscription(user_id=user_id, school_id=school_id)
+    subscription_repo.cancel_subscription(user_id=user_id, school_id=school_id)
 
 
 def list_subscribed_schools_news_usecase(

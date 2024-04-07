@@ -23,8 +23,11 @@ test-watch:
 mypy:
 	poetry run mypy .
 
-lint:
+black:
 	poetry run black .
-	poetry run isort .
+
+flake8:
 	poetry run flake8 .
-	poetry run mypy .
+
+isort:
+	poetry run isort .

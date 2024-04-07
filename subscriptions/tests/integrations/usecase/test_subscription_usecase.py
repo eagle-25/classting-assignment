@@ -56,7 +56,7 @@ def test_list_subscribed_schools_usecase():
 
     # When
     repo = DjangoOrmSubscriptionsRepo()
-    res = repo.list_subscription(user_id=subscriber.id)
+    res = repo.list_subscriptions(user_id=subscriber.id)
 
     # Then
     assert len(res) == 1

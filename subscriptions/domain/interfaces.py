@@ -12,13 +12,13 @@ class ISubscriptionsRepo(Protocol):
         """
         pass
 
-    def list_subscription(self, user_id: int) -> list[SubscriptionEntity]:
+    def list_subscriptions(self, user_id: int) -> list[SubscriptionEntity]:
         """
         구독한 학교 목록을 조회한다.
         """
         pass
 
-    def delete_subscription(self, user_id: int, school_id: int) -> None:
+    def cancel_subscription(self, user_id: int, school_id: int) -> None:
         """
         구독한 학교를 삭제한다.
         """

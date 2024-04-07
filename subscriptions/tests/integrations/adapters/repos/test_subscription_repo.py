@@ -107,7 +107,7 @@ def test_django_subscription_repo_list_subscription(school, subscriber, subscrip
     SubscriptionFactory(user=subscriber, school=school)
 
     # when
-    subscriptions = subscription_repo.list_subscription(user_id=subscriber.id)
+    subscriptions = subscription_repo.list_subscriptions(user_id=subscriber.id)
 
     # then
     assert len(subscriptions) == 1

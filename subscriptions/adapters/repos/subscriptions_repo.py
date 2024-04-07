@@ -58,7 +58,7 @@ class DjangoOrmSubscriptionsRepo(ISubscriptionsRepo):
         else:
             raise SubscriptionCreateFailed(detail="Already subscribed")
 
-    def list_subscription(self, user_id: int) -> list[SubscriptionEntity]:
+    def list_subscriptions(self, user_id: int) -> list[SubscriptionEntity]:
         """
         구독증인 학교 목록을 조회한다.
         """
