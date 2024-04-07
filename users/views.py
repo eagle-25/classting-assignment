@@ -16,7 +16,7 @@ def sign_in_view(request: HttpRequest) -> HttpResponse:
     return resp
 
 
-def create_user_view(request: HttpRequest) -> HttpResponse:
+def sign_up_view(request: HttpRequest) -> HttpResponse:
     if (email := request.POST.get("email")) is None:
         raise ValueNotFound(detail="email")
     if (password := request.POST.get("password")) is None:

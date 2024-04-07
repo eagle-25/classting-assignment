@@ -54,21 +54,27 @@ class SchoolView(View):
 
 class SchoolNewsView(View):
     @method_decorator(jwt_login)
-    def post(self, request: HttpRequest, user_id: int, school_id: int) -> HttpResponse:
+    def post(self, request: HttpRequest, user_id: int) -> HttpResponse:
         """
         학교 소식을 생성하는 API View
         """
+        if (school_id := request.POST.get('school_id')) is None:
+            raise ValueNotFound(detail="school_id")
         if (content := request.POST.get('content')) is None:
             raise ValueNotFound(detail="content")
         school_repo = DjangoOrmSchoolsRepo()
-        create_school_news_usecase(school_repo=school_repo, owner_id=user_id, school_id=school_id, content=content)
+        create_school_news_usecase(
+            school_repo=school_repo, owner_id=int(user_id), school_id=int(school_id), content=content
+        )
         return HttpResponse(status=201)
 
     @method_decorator(jwt_login)
-    def get(self, request: HttpRequest, user_id: int, school_id: int) -> HttpResponse:
+    def get(self, request: HttpRequest, user_id: int) -> HttpResponse:
         """
         학교별 소식들을 조회하는 API View
         """
+        if (school_id := request.GET.get('school_id')) is None:
+            raise ValueNotFound(detail="school_id")
         repo = DjangoOrmSchoolsRepo()
         school_news = repo.list_school_news(school_id=int(school_id))
         school_news = [dataclasses.asdict(news) for news in school_news]
