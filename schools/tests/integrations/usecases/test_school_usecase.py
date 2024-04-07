@@ -49,8 +49,8 @@ def test_list_schools_usecase():
 
     # then
     assert len(schools) == 2
-    assert schools[0] == school1.to_entity()
-    assert schools[1] == school2.to_entity()
+    assert schools[0] == school1.to_dto()
+    assert schools[1] == school2.to_dto()
 
 
 @pytest.mark.django_db

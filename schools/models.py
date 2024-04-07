@@ -3,6 +3,7 @@ from __future__ import annotations
 from django.db import models
 
 from schools.domain.entities import SchoolEntity, SchoolNewsEntity
+from schools.values import SchoolDTO
 
 
 class Schools(models.Model):
@@ -27,6 +28,15 @@ class Schools(models.Model):
     def to_entity(self) -> SchoolEntity:
         return SchoolEntity(
             id=self.id, owner_id=self.owner.id, name=self.name, city=self.city, created_at=self.created_at
+        )
+
+    def to_dto(self) -> SchoolDTO:
+        return SchoolDTO(
+            id=self.id,
+            name=self.name,
+            city=self.city,
+            owner_email=self.owner.email,
+            created_at=self.created_at,
         )
 
 

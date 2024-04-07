@@ -44,12 +44,13 @@ class SchoolView(View):
             except ValueError:
                 return None
 
+        repo = DjangoOrmSchoolsRepo()
         cmd = ListSchoolsCmd(
             owner_id=_get_int_or_none(request.GET.get('owner_id', '')),
             school_name=request.GET.get('school_name'),
             city=request.GET.get('city'),
         )
-        schools = list_schools_usecase(school_repo=DjangoOrmSchoolsRepo(), cmd=cmd)
+        schools = list_schools_usecase(school_repo=repo, cmd=cmd)
         schools = [dataclasses.asdict(school) for school in schools]
         return JsonResponse(data={'schools': schools}, status=200)
 

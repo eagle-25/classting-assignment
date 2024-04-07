@@ -31,7 +31,7 @@ def test_django_school_repo_list_schools():
 
     # then
     assert len(schools) == 1
-    assert schools[0] == school1.to_entity()
+    assert schools[0] == school1.to_dto()
 
 
 @pytest.mark.django_db

@@ -9,6 +9,7 @@ from schools.domain.exceptions import (
 )
 from schools.domain.interfaces import ISchoolRepo
 from schools.models import SchoolNews, Schools
+from schools.values import SchoolDTO
 
 
 class DjangoOrmSchoolsRepo(ISchoolRepo):
@@ -21,7 +22,7 @@ class DjangoOrmSchoolsRepo(ISchoolRepo):
         except IntegrityError:
             raise SchoolCreateFailed(detail="Already exists")
 
-    def list_schools(self, cmd: ListSchoolsCmd) -> list[SchoolEntity]:
+    def list_schools(self, cmd: ListSchoolsCmd) -> list[SchoolDTO]:
         """
         학교 목록을 반환한다. id 기준 오름차순으로 정렬한다.
         """
@@ -32,7 +33,7 @@ class DjangoOrmSchoolsRepo(ISchoolRepo):
             schools = schools.filter(city__icontains=cmd.city)
         if cmd.owner_id:
             schools = schools.filter(owner_id=cmd.owner_id)
-        return [x.to_entity() for x in schools.order_by('id')]
+        return [school.to_dto() for school in schools]
 
     def create_school_news(self, entity: SchoolNewsEntity) -> None:
         """

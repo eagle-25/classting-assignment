@@ -2,6 +2,7 @@ from typing import Protocol
 
 from schools.domain.commands import ListSchoolsCmd
 from schools.domain.entities import SchoolEntity, SchoolNewsEntity
+from schools.values import SchoolDTO
 
 
 class ISchoolRepo(Protocol):
@@ -11,7 +12,7 @@ class ISchoolRepo(Protocol):
         """
         ...
 
-    def list_schools(self, cmd: ListSchoolsCmd) -> list[SchoolEntity]:
+    def list_schools(self, cmd: ListSchoolsCmd) -> list[SchoolDTO]:
         """
         학교 목록을 반환한다. id 기준 오름차순으로 정렬한다.
         """
