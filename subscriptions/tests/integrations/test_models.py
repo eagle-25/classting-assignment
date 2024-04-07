@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 import pytest
 
 from schools.models import Schools
@@ -17,6 +19,7 @@ def test_subscriptions_from_entity():
     entity = SubscriptionEntity(
         user_id=user.id,
         school_id=school.id,
+        subscribed_at=datetime.now(tz=timezone.utc),
         canceled_at=None,
     )
 
