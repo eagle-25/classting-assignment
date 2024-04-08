@@ -9,7 +9,7 @@ from django.views import View
 from common.decorators import jwt_login
 from common.exceptions import ValueNotFound
 from schools.adapters.repos.school_repo import DjangoOrmSchoolsRepo
-from schools.domain.commands import ListSchoolsCmd
+from schools.domain.commands import SearchSchoolsCmd
 from schools.usecases.school_usecase import (
     create_school_news_usecase,
     delete_school_news_usecase,
@@ -43,12 +43,12 @@ class SchoolView(View):
             except ValueError:
                 return None
 
-        cmd = ListSchoolsCmd(
+        cmd = SearchSchoolsCmd(
             owner_id=_get_int_or_none(request.GET.get('owner_id', '')),
             school_name=request.GET.get('school_name'),
             city=request.GET.get('city'),
         )
-        schools = DjangoOrmSchoolsRepo().list_schools(cmd=cmd)
+        schools = DjangoOrmSchoolsRepo().search_schools(cmd=cmd)
         schools = [dataclasses.asdict(school) for school in schools]
         return JsonResponse(data={'schools': schools}, status=200)
 
@@ -109,3 +109,13 @@ class SchoolNewsView(View):
         school_repo = DjangoOrmSchoolsRepo()
         delete_school_news_usecase(school_repo=school_repo, owner_id=user_id, news_id=news_id)
         return HttpResponse(status=204)
+
+
+@jwt_login
+def list_owned_schools(request: HttpRequest, user_id: int) -> HttpResponse:
+    """
+    유저가 소유한 학교들을 조회하는 API View
+    """
+    schools = DjangoOrmSchoolsRepo().list_schools(user_id=user_id)
+    schools = [dataclasses.asdict(school) for school in schools]
+    return JsonResponse(data={'schools': schools}, status=200)

@@ -1,6 +1,6 @@
 from django.db import IntegrityError
 
-from schools.domain.commands import ListSchoolsCmd
+from schools.domain.commands import SearchSchoolsCmd
 from schools.domain.entities import SchoolEntity, SchoolNewsEntity
 from schools.domain.exceptions import (
     SchoolAlreadyExists,
@@ -23,9 +23,9 @@ class DjangoOrmSchoolsRepo(ISchoolRepo):
         except IntegrityError:
             raise SchoolAlreadyExists
 
-    def list_schools(self, cmd: ListSchoolsCmd) -> list[SchoolDTO]:
+    def search_schools(self, cmd: SearchSchoolsCmd) -> list[SchoolDTO]:
         """
-        학교 목록을 반환한다. id 기준 오름차순으로 정렬한다.
+        조건에 맞는 학교를 검색한다. id 기준 오름차순으로 정렬한다.
         """
         schools = Schools.objects.all()
         if cmd.school_name:
@@ -41,6 +41,12 @@ class DjangoOrmSchoolsRepo(ISchoolRepo):
         학교 소식을 생성한다.
         """
         SchoolNews.from_entity(entity=entity).save()
+
+    def list_schools(self, user_id: int) -> list[SchoolDTO]:
+        """
+        유저가 소유한 학교 목록을 반환한다.
+        """
+        return [x.to_dto() for x in Schools.objects.filter(owner_id=user_id)]
 
     def list_school_news(self, school_id: int) -> list[SchoolNewsEntity]:
         """

@@ -1,7 +1,7 @@
 import pytest
 
 from schools.adapters.repos.school_repo import DjangoOrmSchoolsRepo
-from schools.domain.commands import ListSchoolsCmd
+from schools.domain.commands import SearchSchoolsCmd
 from schools.domain.exceptions import (
     SchoolAlreadyExists,
     SchoolNewsNotFound,
@@ -14,9 +14,9 @@ from users.tests.factories import UserFactory
 
 
 @pytest.mark.django_db
-def test_django_school_repo_list_schools():
+def test_django_school_repo_search_schools():
     """
-    owner가 가지는 학교들을 조회할 수 있는지 테스트
+    조건에 맞는 학교를 조회할 수 있는지 테스트
     """
     # given
     user: Users = UserFactory()
@@ -26,8 +26,8 @@ def test_django_school_repo_list_schools():
 
     # when
     repo = DjangoOrmSchoolsRepo()
-    cmd = ListSchoolsCmd(owner_id=user.id, city="Seoul", school_name="SNU")
-    schools = repo.list_schools(cmd=cmd)
+    cmd = SearchSchoolsCmd(owner_id=user.id, city="Seoul", school_name="SNU")
+    schools = repo.search_schools(cmd=cmd)
 
     # then
     assert len(schools) == 1

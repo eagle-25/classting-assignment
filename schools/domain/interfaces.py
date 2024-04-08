@@ -1,6 +1,6 @@
 from typing import Protocol
 
-from schools.domain.commands import ListSchoolsCmd
+from schools.domain.commands import SearchSchoolsCmd
 from schools.domain.entities import SchoolNewsEntity
 from schools.domain.values import SchoolDTO
 
@@ -12,7 +12,7 @@ class ISchoolRepo(Protocol):
         """
         ...
 
-    def list_schools(self, cmd: ListSchoolsCmd) -> list[SchoolDTO]:
+    def search_schools(self, cmd: SearchSchoolsCmd) -> list[SchoolDTO]:
         """
         학교 목록을 반환한다. id 기준 오름차순으로 정렬한다.
         """
@@ -21,6 +21,12 @@ class ISchoolRepo(Protocol):
     def create_school_news(self, entity: SchoolNewsEntity) -> None:
         """
         학교 소식을 생성한다.
+        """
+        ...
+
+    def list_schools(self, user_id: int) -> list[SchoolDTO]:
+        """
+        유저가 소유한 학교 목록을 반환한다.
         """
         ...
 
