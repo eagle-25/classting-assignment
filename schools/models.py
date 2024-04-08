@@ -45,7 +45,7 @@ class SchoolNews(models.Model):
     id = models.SmallAutoField(primary_key=True)
     school = models.ForeignKey(Schools, on_delete=models.DO_NOTHING, db_index=True)
     content = models.TextField(max_length=1000, null=False)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
