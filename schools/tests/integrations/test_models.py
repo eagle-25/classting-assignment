@@ -8,26 +8,6 @@ from users.tests.factories import UserFactory
 
 
 @pytest.mark.django_db
-def test_school_from_entity():
-    # given
-    user = UserFactory()
-    entity = SchoolEntity(
-        owner_id=user.id,
-        name="classting",
-        city="seoul",
-    )
-
-    # when
-    res = Schools.from_entity(entity=entity)
-
-    # then
-    assert isinstance(res, Schools)
-    assert res.owner_id == entity.owner_id
-    assert res.name == entity.name
-    assert res.city == entity.city
-
-
-@pytest.mark.django_db
 def test_school_to_entity():
     # given
     user = UserFactory()
@@ -43,25 +23,6 @@ def test_school_to_entity():
     assert res.name == schools.name
     assert res.city == schools.city
     assert res.created_at == schools.created_at
-
-
-@pytest.mark.django_db
-def test_school_news_from_entity():
-    # given
-    user: Users = UserFactory()
-    school: Schools = SchoolFactory(owner_id=user.id)
-    entity = SchoolNewsEntity(
-        school_id=school.id,
-        content="content",
-    )
-
-    # when
-    res = SchoolNews.from_entity(entity=entity)
-
-    # then
-    assert isinstance(res, SchoolNews)
-    assert res.school.id == entity.school_id
-    assert res.content == entity.content
 
 
 @pytest.mark.django_db

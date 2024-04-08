@@ -15,14 +15,6 @@ class Users(models.Model):
     class Meta:
         db_table = "users"
 
-    @classmethod
-    def from_entity(cls, user_entity: UserEntity) -> Users:
-        return cls(
-            id=user_entity.id,
-            email=user_entity.email,
-            password=user_entity.password,
-        )
-
     def to_entity(self) -> UserEntity:
         return UserEntity(
             id=self.id,

@@ -18,7 +18,7 @@ class ISchoolRepo(Protocol):
         """
         ...
 
-    def create_school_news(self, entity: SchoolNewsEntity) -> None:
+    def create_school_news(self, school_id: int, content: str) -> None:
         """
         학교 소식을 생성한다.
         """

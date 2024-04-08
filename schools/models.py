@@ -17,14 +17,6 @@ class Schools(models.Model):
         db_table = 'schools'
         unique_together = ('name', 'city')
 
-    @classmethod
-    def from_entity(cls, entity: SchoolEntity) -> Schools:
-        return cls(
-            owner_id=entity.owner_id,
-            name=entity.name,
-            city=entity.city,
-        )
-
     def to_entity(self) -> SchoolEntity:
         return SchoolEntity(
             id=self.id, owner_id=self.owner.id, name=self.name, city=self.city, created_at=self.created_at
@@ -50,13 +42,6 @@ class SchoolNews(models.Model):
 
     class Meta:
         db_table = 'school_news'
-
-    @classmethod
-    def from_entity(cls, entity: SchoolNewsEntity) -> SchoolNews:
-        return cls(
-            school_id=entity.school_id,
-            content=entity.content,
-        )
 
     def to_entity(self) -> SchoolNewsEntity:
         return SchoolNewsEntity(

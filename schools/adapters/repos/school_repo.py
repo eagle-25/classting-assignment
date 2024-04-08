@@ -1,7 +1,7 @@
 from django.db import IntegrityError
 
 from schools.domain.commands import SearchSchoolsCmd
-from schools.domain.entities import SchoolEntity, SchoolNewsEntity
+from schools.domain.entities import SchoolNewsEntity
 from schools.domain.exceptions import (
     SchoolAlreadyExists,
     SchoolNewsNotFound,
@@ -18,8 +18,7 @@ class DjangoOrmSchoolsRepo(ISchoolRepo):
         학교를 생성한다.
         """
         try:
-            entity = SchoolEntity(owner_id=owner_id, name=school_name, city=city)
-            Schools.from_entity(entity=entity).save()
+            Schools.objects.create(owner_id=owner_id, name=school_name, city=city)
         except IntegrityError:
             raise SchoolAlreadyExists
 
@@ -36,11 +35,11 @@ class DjangoOrmSchoolsRepo(ISchoolRepo):
             schools = schools.filter(owner_id=cmd.owner_id)
         return [school.to_dto() for school in schools]
 
-    def create_school_news(self, entity: SchoolNewsEntity) -> None:
+    def create_school_news(self, school_id: int, content: str) -> None:
         """
         학교 소식을 생성한다.
         """
-        SchoolNews.from_entity(entity=entity).save()
+        SchoolNews.objects.create(school_id=school_id, content=content)
 
     def list_schools(self, user_id: int) -> list[SchoolDTO]:
         """

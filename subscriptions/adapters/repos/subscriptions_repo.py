@@ -29,14 +29,13 @@ class DjangoOrmSubscriptionsRepo(ISubscriptionsRepo):
             """
             최초 구독시 사용
             """
-            entity = SubscriptionEntity(
-                user_id=user_id_,
-                school_id=school_id_,
-                subscribed_at=datetime.now(tz=timezone.utc),
-                canceled_at=None,
-            )
             try:
-                Subscriptions.from_entity(entity=entity).save()
+                Subscriptions.objects.create(
+                    user_id=user_id_,
+                    school_id=school_id_,
+                    subscribed_at=datetime.now(tz=timezone.utc),
+                    canceled_at=None,
+                )
             except IntegrityError:
                 raise AlreadySubscribed
 

@@ -20,15 +20,6 @@ class Subscriptions(models.Model):
         db_table = "subscriptions"
         unique_together = [["user_id", "school_id"]]
 
-    @classmethod
-    def from_entity(cls, entity: SubscriptionEntity) -> Subscriptions:
-        return cls(
-            user_id=entity.user_id,
-            school_id=entity.school_id,
-            subscribed_at=entity.subscribed_at,
-            canceled_at=entity.canceled_at,
-        )
-
     def to_entity(self) -> SubscriptionEntity:
         return SubscriptionEntity(
             id=self.id,

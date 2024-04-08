@@ -13,9 +13,9 @@ class DjangoOrmUserRepo(IUserRepo):
         except Users.DoesNotExist:
             raise UserNotFound(detail="User not found")
 
-    def create(self, entity: UserEntity) -> None:
+    def create(self, email: str, encrypted_password: str) -> None:
         try:
-            Users.from_entity(entity).save()
+            Users.objects.create(email=email, password=encrypted_password)
         except IntegrityError:
             raise UserAlreadyExists(detail="email in use")
 

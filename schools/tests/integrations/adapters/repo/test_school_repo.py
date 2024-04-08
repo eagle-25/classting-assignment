@@ -78,7 +78,7 @@ def test_django_school_repo_create_school_news():
 
     # when
     repo = DjangoOrmSchoolsRepo()
-    repo.create_school_news(entity=school_news)
+    repo.create_school_news(school_id=school.id, content=school_news.content)
 
     # then
     assert Schools.objects.filter(id=school.id).exists()

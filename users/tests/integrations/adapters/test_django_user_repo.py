@@ -1,7 +1,6 @@
 import pytest
 
 from users.adapters.repos.django_user_repo import DjangoOrmUserRepo
-from users.domain.entities import UserEntity
 from users.domain.exceptions import UserAlreadyExists, UserNotFound
 from users.models import Users
 from users.tests.factories import UserFactory
@@ -73,13 +72,14 @@ def test_django_user_repo_create():
     사용자를 생성할 수 있는지 테스트한다.
     """
     # given
-    entity = UserEntity(email="abc@example.com", password="password")
+    email = "abc@example.com"
+    password = "encrypted"
 
     # when
-    DjangoOrmUserRepo().create(entity=entity)
+    DjangoOrmUserRepo().create(email=email, encrypted_password=password)
 
     # then
-    assert Users.objects.filter(email=entity.email).exists()
+    assert Users.objects.filter(email=email, password=password).exists()
 
 
 @pytest.mark.django_db
@@ -92,7 +92,6 @@ def test_django_user_repo_create_failed():
     UserFactory(email=email)
 
     # when, then
-    entity = UserEntity(email=email, password="_")
     with pytest.raises(UserAlreadyExists) as e:
-        DjangoOrmUserRepo().create(entity=entity)
+        DjangoOrmUserRepo().create(email=email, encrypted_password="_")
     assert e.value.detail == "email in use"

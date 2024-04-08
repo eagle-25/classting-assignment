@@ -3,7 +3,6 @@ from pytest_mock import MockFixture
 
 from common.exceptions import Unauthorized
 from schools.adapters.repos.school_repo import DjangoOrmSchoolsRepo
-from schools.domain.entities import SchoolNewsEntity
 from schools.usecases.school_usecase import (
     create_school_news_usecase,
     delete_school_news_usecase,
@@ -37,8 +36,7 @@ def test_create_school_news_usecase(mocker: MockFixture):
     create_school_news_usecase(repo, owner_id=1, school_id=1, content="content")
 
     # then
-    entity = SchoolNewsEntity(school_id=1, content='content')
-    create_action.assert_called_once_with(entity=entity)
+    create_action.assert_called_once_with(school_id=1, content="content")
 
 
 def test_update_school_news_usecase_with_not_owned_news(mocker: MockFixture):

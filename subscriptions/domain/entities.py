@@ -4,7 +4,7 @@ from datetime import datetime
 
 @dataclass(kw_only=True)
 class SubscriptionEntity:
-    id: int | None = field(default=None)
+    id: int
     user_id: int
     school_id: int
     subscribed_at: datetime

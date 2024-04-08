@@ -3,7 +3,6 @@ from datetime import datetime, timedelta, timezone
 from common import settings
 from common.exceptions import InvalidParameter
 from common.utils import encode_jwt, encrypt_aes, is_valid_email
-from users.domain.entities import UserEntity
 from users.domain.interfaces import IUserRepo
 
 
@@ -15,8 +14,7 @@ def sign_up_usecase(user_repo: IUserRepo, *, email: str, password: str) -> None:
         raise InvalidParameter(detail="Invalid email")
     else:
         encrypted_password = encrypt_aes(data=password, key=settings.AES_KEY, iv=settings.AES_IV)
-        entity = UserEntity(email=email, password=encrypted_password)
-        user_repo.create(entity=entity)
+        user_repo.create(email=email, encrypted_password=encrypted_password)
 
 
 def sign_in_usecase(user_repo: IUserRepo, *, email: str, password: str) -> str:

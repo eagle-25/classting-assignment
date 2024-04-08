@@ -10,8 +10,7 @@ def create_school_news_usecase(school_repo: ISchoolRepo, owner_id: int, school_i
     if not school_repo.is_owned_school(owner_id=owner_id, school_id=school_id):
         raise Unauthorized
     else:
-        entity = SchoolNewsEntity(school_id=school_id, content=content)
-        school_repo.create_school_news(entity=entity)
+        school_repo.create_school_news(school_id=school_id, content=content)
 
 
 def update_school_news_usecase(school_repo: ISchoolRepo, owner_id: int, news_id: int, content: str) -> SchoolNewsEntity:

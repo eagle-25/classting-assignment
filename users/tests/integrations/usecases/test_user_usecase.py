@@ -7,7 +7,6 @@ from common import settings
 from common.exceptions import InvalidParameter
 from common.utils import encode_jwt, encrypt_aes
 from users.adapters.repos.django_user_repo import DjangoOrmUserRepo
-from users.domain.entities import UserEntity
 from users.tests.factories import UserFactory
 from users.usecases.user_usecase import sign_in_usecase, sign_up_usecase
 
@@ -30,8 +29,7 @@ def test_sign_up_usecase(mocker: MockerFixture):
 
     # then
     encrypted_password = encrypt_aes(data=password, key=settings.AES_KEY, iv=settings.AES_IV)
-    entity = UserEntity(email=email, password=encrypted_password)
-    mocked_create.assert_called_once_with(entity=entity)
+    mocked_create.assert_called_once_with(email=email, encrypted_password=encrypted_password)
 
 
 def test_sign_up_usecase_invalid_email():
@@ -67,8 +65,7 @@ def test_sign_up_usecase_encrypt_password(mocker: MockerFixture):
     sign_up_usecase(user_repo=DjangoOrmUserRepo(), email="abc@example.com", password=password)
 
     # then
-    entity = UserEntity(email=email, password=encrypted_password)
-    mocked_create.assert_called_once_with(entity=entity)
+    mocked_create.assert_called_once_with(email=email, encrypted_password=encrypted_password)
 
 
 @pytest.mark.django_db
