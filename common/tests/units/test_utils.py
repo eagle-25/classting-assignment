@@ -6,7 +6,14 @@ from freezegun import freeze_time
 
 from common import settings
 from common.exceptions import InvalidParameter
-from common.utils import decode_jwt, decrypt_aes, encode_jwt, encrypt_aes, parse_body
+from common.utils import (
+    decode_jwt,
+    decrypt_aes,
+    encode_jwt,
+    encrypt_aes,
+    is_valid_email,
+    parse_body,
+)
 
 
 def test_encrypt_aes():
@@ -128,3 +135,12 @@ def test_parse_body_raise_error():
     with pytest.raises(InvalidParameter) as e:
         parse_body(request=HttpRequest())
     assert e.value.detail == "Invalid body"
+
+
+@pytest.mark.parametrize("email, expected_result", [("abc@example.com", True), ("abc", False)])
+def test_is_valid_email(email, expected_result):
+    # when
+    res = is_valid_email(email)
+
+    # then
+    assert res == expected_result

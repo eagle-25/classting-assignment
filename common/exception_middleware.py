@@ -19,7 +19,7 @@ class ExceptionMiddleware:
             logger.exception(exception.msg)
             return JsonResponse(
                 {
-                    "code": exception.code,
+                    "code": f"E-{exception.code}",
                     "msg": exception.msg,
                     "detail": exception.detail,
                 },

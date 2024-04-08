@@ -12,7 +12,7 @@ def sign_in_view(request: HttpRequest) -> HttpResponse:
         raise ValueNotFound(detail="password")
     jwt_token = sign_in_usecase(user_repo=DjangoOrmUserRepo(), email=email, password=password)
     resp = HttpResponse(status=200)
-    resp.set_cookie("jwt", jwt_token)
+    resp.set_cookie("jwt", jwt_token, httponly=True)
     return resp
 
 

@@ -1,7 +1,7 @@
 from django.db import IntegrityError
 
 from users.domain.entities import UserEntity
-from users.domain.exceptions import UserCreateFailed, UserNotFound
+from users.domain.exceptions import UserAlreadyExists, UserNotFound
 from users.domain.interfaces import IUserRepo
 from users.models import Users
 
@@ -17,7 +17,7 @@ class DjangoOrmUserRepo(IUserRepo):
         try:
             Users.from_entity(entity).save()
         except IntegrityError:
-            raise UserCreateFailed(detail="User already exists")
+            raise UserAlreadyExists(detail="email in use")
 
     def get_by_email_and_password(self, email: str, password: str) -> UserEntity:
         try:

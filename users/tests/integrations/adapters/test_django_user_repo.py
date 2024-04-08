@@ -2,7 +2,7 @@ import pytest
 
 from users.adapters.repos.django_user_repo import DjangoOrmUserRepo
 from users.domain.entities import UserEntity
-from users.domain.exceptions import UserCreateFailed, UserNotFound
+from users.domain.exceptions import UserAlreadyExists, UserNotFound
 from users.models import Users
 from users.tests.factories import UserFactory
 
@@ -93,5 +93,6 @@ def test_django_user_repo_create_failed():
 
     # when, then
     entity = UserEntity(email=email, password="_")
-    with pytest.raises(UserCreateFailed):
+    with pytest.raises(UserAlreadyExists) as e:
         DjangoOrmUserRepo().create(entity=entity)
+    assert e.value.detail == "email in use"

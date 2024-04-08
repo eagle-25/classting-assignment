@@ -1,9 +1,10 @@
 from common.exceptions import ClientException
 
 
-class UserCreateFailed(ClientException):
-    msg = "User create failed"
+class UserAlreadyExists(ClientException):
+    msg = "User already exists"
     code = 2001
+    status = 409
 
 
 class UserNotFound(ClientException):
