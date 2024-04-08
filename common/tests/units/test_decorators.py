@@ -7,7 +7,7 @@ from django.test import RequestFactory
 from freezegun import freeze_time
 
 from common.decorators import jwt_login
-from common.exceptions import Unauthorized, ValueNotFound
+from common.exceptions import Unauthorized
 from common.utils import encode_jwt
 
 
@@ -49,7 +49,7 @@ def test_jwt_login_error_no_authorization_header():
 
 def test_jwt_login_error_no_user_id():
     """
-    user_id가 없을 때, ValueNotFound 예외가 발생하는지 테스트한다.
+    user_id가 없을 때, Unauthorized 예외가 발생하는지 테스트한다.
     """
     # given
     jwt = encode_jwt({})
@@ -57,9 +57,8 @@ def test_jwt_login_error_no_user_id():
     request.COOKIES = {"jwt": jwt}
 
     # when, then
-    with pytest.raises(ValueNotFound) as e:
+    with pytest.raises(Unauthorized):
         jwt_login(mocked_http_view)(request)
-    assert e.value.detail == "user_id not found"
 
 
 def test_jwt_login_error_jwt_expired():

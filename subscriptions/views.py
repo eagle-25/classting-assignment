@@ -1,11 +1,12 @@
 import dataclasses
 
+from django.core.paginator import EmptyPage
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.utils.decorators import method_decorator
 from django.views import View
 
 from common.decorators import jwt_login
-from common.exceptions import ValueNotFound
+from common.exceptions import NoMorePage, ValueNotFound
 from subscriptions.adapters.repos.subscriptions_repo import DjangoOrmSubscriptionsRepo
 
 
@@ -52,6 +53,11 @@ def list_school_news(request: HttpRequest, user_id: int) -> HttpResponse:
     NEWS_PAGE_SIZE = 10
     page = int(request.GET.get('page_index', 1))
     repo = DjangoOrmSubscriptionsRepo()
-    page_cnt, news = repo.iter_subscribed_schools_news(user_id=user_id, page_index=page, page_size=NEWS_PAGE_SIZE)
-    news = [dataclasses.asdict(news) for news in news]
-    return JsonResponse({"page_size": NEWS_PAGE_SIZE, "total_page_cnt": page_cnt, "cur_page_index": page, "news": news})
+    try:
+        page_cnt, news = repo.iter_subscribed_schools_news(user_id=user_id, page_index=page, page_size=NEWS_PAGE_SIZE)
+    except EmptyPage:
+        raise NoMorePage
+    news_dict = [dataclasses.asdict(news) for news in news]
+    return JsonResponse(
+        {"page_size": NEWS_PAGE_SIZE, "total_page_cnt": page_cnt, "cur_page_index": page, "news": news_dict}
+    )

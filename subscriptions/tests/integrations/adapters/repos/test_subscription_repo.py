@@ -8,8 +8,9 @@ from schools.models import Schools
 from schools.tests.factories import SchoolFactory, SchoolNewsFactory
 from subscriptions.adapters.repos.subscriptions_repo import DjangoOrmSubscriptionsRepo
 from subscriptions.domain.exceptions import (
-    SubscriptionCancelFailed,
-    SubscriptionCreateFailed,
+    AlreadySubscribed,
+    CannotSubscribeToOwnSchool,
+    SubscriptionNotFound,
 )
 from subscriptions.models import Subscriptions
 from subscriptions.tests.factories import SubscriptionFactory
@@ -88,15 +89,14 @@ def test_django_subscription_repo_reactivate_subscribe(school, subscriber, subsc
 @pytest.mark.django_db
 def test_django_subscription_repo_already_subscribed(school, subscriber, subscription_repo):
     """
-    이미 구독한 경우 SubscriptionCreateFailed 예외가 발생한다.
+    이미 구독한 경우 AlreadySubscribed 예외가 발생한다.
     """
     # given
     SubscriptionFactory(user=subscriber, school=school)
 
     # when, then
-    with pytest.raises(SubscriptionCreateFailed) as e:
+    with pytest.raises(AlreadySubscribed):
         subscription_repo.create_subscription(user_id=subscriber.id, school_id=school.id)
-    assert e.value.detail == "Already subscribed"
 
 
 @pytest.mark.django_db
@@ -132,12 +132,11 @@ def test_django_subscription_repo_create_no_school():
 @pytest.mark.django_db
 def test_django_subscription_repo_create_own_school(school, subscription_repo):
     """
-    자신이 소유한 학교에 구독을 시도한 경우, SubscriptionCreateFailed 예외가 발생한다.
+    자신이 소유한 학교에 구독을 시도한 경우, CannotSubscribeToOwnSchool 예외가 발생한다.
     """
     # when, then
-    with pytest.raises(SubscriptionCreateFailed) as e:
+    with pytest.raises(CannotSubscribeToOwnSchool):
         subscription_repo.create_subscription(user_id=school.owner.id, school_id=school.id)
-    assert e.value.detail == "Cannot subscribe to own school"
 
 
 @pytest.mark.django_db
@@ -166,26 +165,24 @@ def test_django_subscription_repo_cancel_subscription(school, subscriber, subscr
 @pytest.mark.django_db
 def test_django_subscription_repo_cancel_no_first_subscription(school, subscriber, subscription_repo):
     """
-    한번도 구독한적이 없는 경우, SubscriptionCreateFailed 예외가 발생한다.
+    한번도 구독한적이 없는 경우, SubscriptionNotFound 예외가 발생한다.
     """
     # when, then
-    with pytest.raises(SubscriptionCancelFailed) as e:
+    with pytest.raises(SubscriptionNotFound):
         subscription_repo.cancel_subscription(user_id=subscriber.id, school_id=school.id)
-    assert e.value.detail == "Subscription not found"
 
 
 @pytest.mark.django_db
 def test_django_subscription_repo_cancel_already_canceled(school, subscriber, subscription_repo):
     """
-    이미 취소한 경우, SubscriptionCancelFailed 예외가 발생한다.
+    이미 취소한 경우, SubscriptionNotFound 예외가 발생한다.
     """
     # given
     SubscriptionFactory(user=subscriber, school=school, canceled_at=datetime.now(tz=timezone.utc))
 
     # when, then
-    with pytest.raises(SubscriptionCancelFailed) as e:
+    with pytest.raises(SubscriptionNotFound):
         subscription_repo.cancel_subscription(user_id=subscriber.id, school_id=school.id)
-    assert e.value.detail == "Already canceled"
 
 
 @pytest.mark.django_db

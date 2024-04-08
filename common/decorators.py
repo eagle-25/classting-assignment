@@ -4,7 +4,7 @@ from typing import Any, TypeVar
 
 from django.http import HttpRequest
 
-from common.exceptions import InvalidParameter, Unauthorized, ValueNotFound
+from common.exceptions import InvalidParameter, Unauthorized
 from common.utils import decode_jwt
 
 T = TypeVar("T")
@@ -23,7 +23,7 @@ def jwt_login(func: Callable[..., T]) -> Callable[..., T]:
             raise Unauthorized
         # get user_id
         if (user_id := decoded_jwt.get("id")) is None:
-            raise ValueNotFound(detail="user_id not found")
+            raise Unauthorized(detail="user_id not found")
         return func(request, user_id, *args, **kwargs)
 
     return _wrapper

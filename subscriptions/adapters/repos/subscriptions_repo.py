@@ -9,8 +9,9 @@ from schools.domain.exceptions import SchoolNotFound
 from schools.models import SchoolNews, Schools
 from subscriptions.domain.entities import SubscriptionEntity
 from subscriptions.domain.exceptions import (
-    SubscriptionCancelFailed,
-    SubscriptionCreateFailed,
+    AlreadySubscribed,
+    CannotSubscribeToOwnSchool,
+    SubscriptionNotFound,
 )
 from subscriptions.domain.interfaces import ISubscriptionsRepo
 from subscriptions.models import Subscriptions
@@ -37,7 +38,7 @@ class DjangoOrmSubscriptionsRepo(ISubscriptionsRepo):
             try:
                 Subscriptions.from_entity(entity=entity).save()
             except IntegrityError:
-                raise SubscriptionCreateFailed(detail="Already subscribed")
+                raise AlreadySubscribed
 
         def _reactivate_subscription(subscription_: Subscriptions) -> None:
             """
@@ -55,7 +56,7 @@ class DjangoOrmSubscriptionsRepo(ISubscriptionsRepo):
 
         # 본인 소유 학교인지 확인
         if (school := _get_school(school_id)).owner_id == user_id:
-            raise SubscriptionCreateFailed(detail="Cannot subscribe to own school")
+            raise CannotSubscribeToOwnSchool
         else:
             subscription = Subscriptions.objects.filter(user_id=user_id, school_id=school).first()
 
@@ -65,7 +66,7 @@ class DjangoOrmSubscriptionsRepo(ISubscriptionsRepo):
         elif subscription.canceled_at is not None:  # 재구독 --> 구독 취소 시간 초기화
             _reactivate_subscription(subscription)
         else:  # 이미 구독한 경우 --> 에러 발생
-            raise SubscriptionCreateFailed(detail="Already subscribed")
+            raise AlreadySubscribed(detail="Already subscribed")
 
     def list_subscriptions(self, user_id: int) -> list[SubscriptionEntity]:
         """
@@ -80,10 +81,10 @@ class DjangoOrmSubscriptionsRepo(ISubscriptionsRepo):
         subscription = Subscriptions.objects.filter(user_id=user_id, school_id=school_id).first()
         # 구독 없는 경우
         if subscription is None:
-            raise SubscriptionCancelFailed(detail="Subscription not found")
+            raise SubscriptionNotFound
         # 이미 취소한 경우
         elif subscription.canceled_at is not None:
-            raise SubscriptionCancelFailed(detail="Already canceled")
+            raise SubscriptionNotFound
         # 구독 취소
         else:
             subscription.canceled_at = datetime.now(tz=timezone.utc)

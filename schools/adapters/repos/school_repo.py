@@ -3,7 +3,7 @@ from django.db import IntegrityError
 from schools.domain.commands import ListSchoolsCmd
 from schools.domain.entities import SchoolEntity, SchoolNewsEntity
 from schools.domain.exceptions import (
-    SchoolCreateFailed,
+    SchoolAlreadyExists,
     SchoolNewsNotFound,
     SchoolNotFound,
 )
@@ -21,7 +21,7 @@ class DjangoOrmSchoolsRepo(ISchoolRepo):
             entity = SchoolEntity(owner_id=owner_id, name=school_name, city=city)
             Schools.from_entity(entity=entity).save()
         except IntegrityError:
-            raise SchoolCreateFailed(detail="Already exists")
+            raise SchoolAlreadyExists
 
     def list_schools(self, cmd: ListSchoolsCmd) -> list[SchoolDTO]:
         """
@@ -46,7 +46,12 @@ class DjangoOrmSchoolsRepo(ISchoolRepo):
         """
         학교의 소식을 최신순으로 반환한다..
         """
-        return [x.to_entity() for x in SchoolNews.objects.filter(school_id=school_id).order_by('-id')]
+        try:
+            school = Schools.objects.get(id=school_id)
+        except Schools.DoesNotExist:
+            raise SchoolNotFound
+
+        return [x.to_entity() for x in SchoolNews.objects.filter(school=school).order_by('-id')]
 
     def update_school_news(self, news_id: int, content: str) -> SchoolNewsEntity:
         """

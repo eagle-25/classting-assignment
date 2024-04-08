@@ -38,3 +38,13 @@ class Unauthorized(ClientException):
     status = 401
     code = 1004
     msg = "Unauthorized"
+
+
+class ArgumentMissingException(ClientException):
+    code = 1005
+    msg = "Argument missing"
+
+
+class NoMorePage(ClientException):
+    code = 1006
+    msg = "No more page"

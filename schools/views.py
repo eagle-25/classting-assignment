@@ -1,4 +1,6 @@
 import dataclasses
+from typing import Any
+from urllib.parse import parse_qs
 
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.utils.decorators import method_decorator
@@ -6,7 +8,6 @@ from django.views import View
 
 from common.decorators import jwt_login
 from common.exceptions import ValueNotFound
-from common.utils import parse_body
 from schools.adapters.repos.school_repo import DjangoOrmSchoolsRepo
 from schools.domain.commands import ListSchoolsCmd
 from schools.usecases.school_usecase import (
@@ -81,11 +82,19 @@ class SchoolNewsView(View):
         return JsonResponse(data={'school_news': school_news}, status=200)
 
     @method_decorator(jwt_login)
-    def patch(self, request: HttpRequest, user_id: int, news_id: int) -> HttpResponse:
+    def patch(self, request: HttpRequest, user_id: int) -> HttpResponse:
         """
         학교 소식을 수정하는 API View. 필드 추가되는 경우 대비해 patch로 구현
         """
-        body = parse_body(request)
+
+        def _parse_body(request_: HttpRequest) -> dict[str, Any]:
+            body_unicode = request.body.decode('utf-8')
+            body_data = parse_qs(body_unicode)
+            return {key: value[0] for key, value in body_data.items()}
+
+        body = _parse_body(request)
+        if (news_id := body.get('news_id')) is None:
+            raise ValueNotFound(detail="news_id")
         if (content := body.get('content')) is None:
             raise ValueNotFound(detail="content")
         school_repo = DjangoOrmSchoolsRepo()

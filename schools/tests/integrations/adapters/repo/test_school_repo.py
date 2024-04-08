@@ -3,7 +3,7 @@ import pytest
 from schools.adapters.repos.school_repo import DjangoOrmSchoolsRepo
 from schools.domain.commands import ListSchoolsCmd
 from schools.domain.exceptions import (
-    SchoolCreateFailed,
+    SchoolAlreadyExists,
     SchoolNewsNotFound,
     SchoolNotFound,
 )
@@ -62,9 +62,8 @@ def test_django_school_repo_create_school_failed():
 
     # when, then
     repo = DjangoOrmSchoolsRepo()
-    with pytest.raises(SchoolCreateFailed) as e:
+    with pytest.raises(SchoolAlreadyExists):
         repo.create_school(owner_id=user.id, school_name=school.name, city=school.city)
-    assert e.value.detail == "Already exists"
 
 
 @pytest.mark.django_db
@@ -104,6 +103,17 @@ def test_django_school_repo_list_school_news():
     assert len(school_news) == 2
     assert school_news[0] == school_news2.to_entity()
     assert school_news[1] == school_news1.to_entity()
+
+
+@pytest.mark.django_db
+def test_django_school_repo_list_school_news_not_found():
+    """
+    존재하지 않는 학교 소식을 조회할 때 에러가 발생하는지 테스트
+    """
+    # when, then
+    repo = DjangoOrmSchoolsRepo()
+    with pytest.raises(SchoolNotFound):
+        repo.list_school_news(school_id=1)
 
 
 @pytest.mark.django_db

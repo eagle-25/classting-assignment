@@ -1,13 +1,19 @@
 from common.exceptions import ClientException
 
 
-class SubscriptionCancelFailed(ClientException):
-    status = 400
+class AlreadySubscribed(ClientException):
+    status = 409
     code = 4001
-    msg = 'Subscription cancel failed'
+    msg = 'Already subscribed'
 
 
-class SubscriptionCreateFailed(ClientException):
+class CannotSubscribeToOwnSchool(ClientException):
     status = 400
     code = 4002
-    msg = 'Subscription create failed'
+    msg = 'Cannot subscribe to own school'
+
+
+class SubscriptionNotFound(ClientException):
+    status = 400
+    code = 4003
+    msg = 'Subscription not found'
