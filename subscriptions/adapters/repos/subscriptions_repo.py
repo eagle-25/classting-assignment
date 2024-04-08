@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 
 from django.core.paginator import Paginator
 from django.db import IntegrityError
+from django.db.models import Q
 
 from schools.domain.entities import SchoolNewsEntity
 from schools.domain.exceptions import SchoolNotFound
@@ -101,14 +102,13 @@ class DjangoOrmSubscriptionsRepo(ISubscriptionsRepo):
             raise UserNotFound
 
         subscriptions = Subscriptions.objects.filter(user=user)
-        news = SchoolNews.objects.none()
+        q_objects = Q()
         for subscription in subscriptions:
-
-            news |= SchoolNews.objects.filter(
+            q_objects |= Q(
                 school=subscription.school,
                 created_at__gte=subscription.subscribed_at,
                 created_at__lte=subscription.canceled_at or datetime.now(tz=timezone.utc),
             )
-        news = news.order_by('-created_at')
+        news = SchoolNews.objects.filter(q_objects).order_by('-created_at')
         paginator = Paginator(news, page_size)
         return paginator.num_pages, [x.to_entity() for x in paginator.page(page_index).object_list]
