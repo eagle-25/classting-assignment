@@ -17,10 +17,8 @@
   * Hexagonal Architecture
   * Bounded Contexts
 * [고민 목록](#고민-목록)
-  * News의 BoudedContext 분리
+  * 학교 소식의 BoudedContext 분리
   * 구독 조회 기능 구현
-  * 인증 구현
-  * 401 vs 403
 * [로컬 실행 가이드](#로컬-실행-가이드)
   * 사전 요구사항
   * 실행 방법
@@ -54,17 +52,15 @@ API는 postman에 구축된 [demo 환경](https://www.postman.com/avionics-astro
 ### 요구사항 점검
 
 **학교 관리자**
-  - [ ] 지역, 학교명으로 학교를 생성할 수 있다.
-  - [ ] 학교에 소식을 발행할 수 있다.
-  - [ ] 발행된 소식의 수정 / 삭제가 가능하다.
+  - [x] 지역, 학교명으로 학교를 생성할 수 있다. [(테스트코드)](https://github.com/eagle-25/classting-assignment/blob/a8da34a198d3b87f9a99675cf1f3e2164aa2502d/schools/tests/integrations/adapters/repo/test_school_repo.py#L37-L51)
+  - [x] 학교에 소식을 발행할 수 있다. [(테스트코드)](https://github.com/eagle-25/classting-assignment/blob/a8da34a198d3b87f9a99675cf1f3e2164aa2502d/schools/tests/integrations/adapters/repo/test_school_repo.py#L69-L84)
+  - [x] 발행된 소식의 수정 / 삭제가 가능하다. ([수정 테스트코드](https://github.com/eagle-25/classting-assignment/blob/a8da34a198d3b87f9a99675cf1f3e2164aa2502d/schools/tests/integrations/adapters/repo/test_school_repo.py#L119-L137), [삭제 테스트코드](https://github.com/eagle-25/classting-assignment/blob/a8da34a198d3b87f9a99675cf1f3e2164aa2502d/schools/tests/integrations/adapters/repo/test_school_repo.py#L151-L166))
 
 **학생**
-  - [ ] 학교 페이지를 구독 / 취소 할 수 있다.
-  - [ ] 구독 목록을 조회할 수 있다.
-  - [ ] 학교별 소식을 볼 수 있다.
-  - [ ] 구독한 학교들의 소식을 모아서 볼 수 있다. (소식 모아보기)
-  - [ ] 소식 모아보기에서 보이는 글은 구독 이후 발행된 글이다.
-  - [ ] 구독을 취소해도, 취소 이전에 발행된 글은 볼 수 있다.
+  - [x] 학교 페이지를 구독 / 취소 할 수 있다. ([구독 테스트코드](https://github.com/eagle-25/classting-assignment/blob/a8da34a198d3b87f9a99675cf1f3e2164aa2502d/subscriptions/tests/integrations/adapters/repos/test_subscription_repo.py#L38-L86), [취소 테스트코드](https://github.com/eagle-25/classting-assignment/blob/a8da34a198d3b87f9a99675cf1f3e2164aa2502d/subscriptions/tests/integrations/adapters/repos/test_subscription_repo.py#L142-L162))
+  - [x] 구독 목록을 조회할 수 있다. ([테스트코드](https://github.com/eagle-25/classting-assignment/blob/a8da34a198d3b87f9a99675cf1f3e2164aa2502d/subscriptions/tests/integrations/adapters/repos/test_subscription_repo.py#L102-L116))
+  - [x] 학교별 소식을 볼 수 있다. ([테스트코드](https://github.com/eagle-25/classting-assignment/blob/a8da34a198d3b87f9a99675cf1f3e2164aa2502d/schools/tests/integrations/adapters/repo/test_school_repo.py#L87-L105))
+  - [x] 구독한 학교들의 소식을 모아서 볼 수 있다. 구독 시작 이후 발행된 소식만 조회 가능하며, 구독을 취소해도 취소 이전에 발행된 글은 볼 수 있다. [(테스트코드)](https://github.com/eagle-25/classting-assignment/blob/a8da34a198d3b87f9a99675cf1f3e2164aa2502d/subscriptions/tests/integrations/adapters/repos/test_subscription_repo.py#L188-L220)
 
 ## Test Coverage
 테스트 커버리지는 아래 뱃지와 같습니다. 
@@ -130,23 +126,19 @@ Hexagonal Architecture는 도메인의 핵심 로직과 외부 의존성을 분�
 ## 고민 목록
 
 ### 학교 소식의 BoudedContext 분리
-학교 소식을 별도의 Boudede Context로 분리할지 고민되었습니다. DDD를 엄격하게 지키려면 학교와 소식의 책임을 분리해야 한다고 생각했기 때문입니다.
 
-고민 끝에 분리하지 않기로 결정했습니다. 학교 소식은 학교의 하위 개념입니다. 컨텍스트를 분리하면 DDD를 엄격하게 지킬 수 있겠지만 시스템 복잡성이 증가하고, 학교 이외의 소유자가 소식을 가질 가능성은 낮기 때문에 ROI가 낮은 작업이라 판단했습니다.
+학교 소식을 별도의 Boudede Context로 분리할지 고민되었지만, 최종적으로 분리하지 않기로 결정했습니다.
 
-학교 소식은 학교 컨텍스트에서, 구독한 소식 모아보기 기능은 구독 컨텍스트에서 구현해 복잡도를 낮추었습니다.
+이유는 학교 소식이 학교의 하위 개념이며, 분리 시 시스템 복잡도가 증가하기 때문에 작업의 ROI가 낮다고 판단했습니다. 
 
-### 구독 조회 기능 구현
+따라서 학교 소식은 학교 컨텍스트 내에서, 구독한 소식 모아보기 기능은 구독 컨텍스트에서 처리해 복잡도를 낮췄습니다.
 
-WIP
 
 ### 인증 구현
 
-사용자 인증을 무엇으로 구현할지 고민되었습니다. 먼저, 인증 구현이 필요했던 이유는 자신이 객체(eg., 학교 소식, 구독)의 생성은 인증된 사용자만 하는것이 적절하다 생각했기 때문입니다.
+사용자 인증 방식으로 API 토큰과 JWT 사이에서 고민했습니다. 그리고, 사용자 인가 변경이 없기 때문에 JWT를 선택했습니다. JWT는 쿠키에 저장하여 API가 자동으로 사용할 수 있게 했습니다.
 
-DB에서 관리하는 API token 방식과, jwt를 고민하였습니다. 사용자에 대한 인가 변경은 발생하지 않기 때문에 jwt를 사용하기로 결정했습니다. 추후 인가 변경이 잦게된다면 API Token 방식을 고려해볼 수 있겠습니다. 또한 jwt 보안 수준이 높아져야 한다면 Refresh token lotation을 적용해 볼 수 있겠습니다.
-
-마지막으로 jwt는 쿠키에 넣어, API에서 자동으로 jwt_token을 사용할 수 있도록 했습니다.
+인가 변경이 잦아진다면 API 토큰 방식을 고려할 수 있겠습니다. 또한, 보안에 신경쓴다면 refresh key rotation을 적용해볼 수 있을 것 같습니다.
 
 
 ## 로컬 실행 가이드
