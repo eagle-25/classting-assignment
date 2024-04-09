@@ -102,13 +102,16 @@ class DjangoOrmSubscriptionsRepo(ISubscriptionsRepo):
             raise UserNotFound
 
         subscriptions = Subscriptions.objects.filter(user=user)
-        q_objects = Q()
-        for subscription in subscriptions:
-            q_objects |= Q(
-                school=subscription.school,
-                created_at__gte=subscription.subscribed_at,
-                created_at__lte=subscription.canceled_at or datetime.now(tz=timezone.utc),
-            )
-        news = SchoolNews.objects.filter(q_objects).order_by('-created_at')
-        paginator = Paginator(news, page_size)
-        return paginator.num_pages, [x.to_entity() for x in paginator.page(page_index).object_list]
+        if not subscriptions.exists():
+            return 0, []
+        else:
+            q_objects = Q()
+            for subscription in subscriptions:
+                q_objects |= Q(
+                    school_id=subscription.school.id,
+                    created_at__gte=subscription.subscribed_at,
+                    created_at__lte=subscription.canceled_at or datetime.now(tz=timezone.utc),
+                )
+            news = SchoolNews.objects.filter(q_objects).order_by('-created_at')
+            paginator = Paginator(news, page_size)
+            return paginator.num_pages, [x.to_entity() for x in paginator.page(page_index).object_list]

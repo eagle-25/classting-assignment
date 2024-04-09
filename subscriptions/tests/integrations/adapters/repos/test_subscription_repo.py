@@ -228,3 +228,21 @@ def test_iter_subscribed_school_news_user_not_found(subscription_repo):
     # when, then
     with pytest.raises(UserNotFound):
         subscription_repo.iter_subscribed_schools_news(user_id=9999, page_index=1, page_size=10)
+
+
+@pytest.mark.django_db
+def test_iter_subscribed_school_news_no_subscription(school):
+    """
+    구독한 학교가 없는 경우, 빈 배열을 반환한다.
+    """
+    # given
+    SchoolNewsFactory(school=school, created_at=datetime.now(tz=timezone.utc))
+    user = UserFactory()
+
+    # when
+    repo = DjangoOrmSubscriptionsRepo()
+    page_cnt, news = repo.iter_subscribed_schools_news(user_id=user.id)
+
+    # assert
+    assert page_cnt == 0
+    assert list(news) == []
