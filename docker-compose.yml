@@ -17,7 +17,7 @@ services:
     depends_on:
       - mysql
     command: |
-      sh -c "./.wait-for-it.sh mysql:3306 --
+      sh -c "./.wait-for-it.sh mysql:3306 -t 100 --
              python manage.py migrate --noinput --
              python manage.py runserver 0.0.0.0:9001"
 
