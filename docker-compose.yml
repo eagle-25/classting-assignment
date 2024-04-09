@@ -16,8 +16,10 @@ services:
     init: true
     depends_on:
       - mysql
+      - redis
     command: |
-      sh -c "./.wait-for-it.sh mysql:3306 --
+      sh -c "./.wait-for-it.sh mysql:3306 -t 30 --
+             ./.wait-for-it.sh redis:6379 -t 30 --
              python manage.py migrate --noinput --
              python manage.py runserver 0.0.0.0:9001"
 
@@ -34,6 +36,12 @@ services:
       - --collation-server=utf8mb4_unicode_ci
     volumes:
       - ./db/mysql-init/:/docker-entrypoint-initdb.d
+
+  redis:
+    container_name: redis
+    image: redis:alpine
+    ports:
+      - 6379:6379
 
   test:
     image: classting-server

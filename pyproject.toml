@@ -27,6 +27,7 @@ pytest-mock = "^3.14.0"
 pymysql = "^1.1.0"
 types-pymysql = "^1.1.0.1"
 logging = "^0.4.9.6"
+django-redis = "^5.4.0"
 
 
 [build-system]
