@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from django.db import models
 
-from users.domain.entities import UserEntity
+from users.domain.user_entity import UserEntity
 
 
 class Users(models.Model):

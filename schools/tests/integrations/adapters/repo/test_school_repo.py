@@ -9,7 +9,7 @@ from schools.domain.exceptions import (
 )
 from schools.models import SchoolNews, Schools
 from schools.tests.factories import SchoolFactory, SchoolNewsFactory
-from users.models import Users
+from users.adapter.outcome.persistence.models import Users
 from users.tests.factories import UserFactory
 
 

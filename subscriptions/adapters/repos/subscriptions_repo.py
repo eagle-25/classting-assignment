@@ -16,8 +16,8 @@ from subscriptions.domain.exceptions import (
 )
 from subscriptions.domain.interfaces import ISubscriptionsRepo
 from subscriptions.models import Subscriptions
+from users.adapter.outcome.persistence.models import Users
 from users.domain.exceptions import UserNotFound
-from users.models import Users
 
 
 class DjangoOrmSubscriptionsRepo(ISubscriptionsRepo):

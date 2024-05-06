@@ -14,8 +14,8 @@ from subscriptions.domain.exceptions import (
 )
 from subscriptions.models import Subscriptions
 from subscriptions.tests.factories import SubscriptionFactory
+from users.adapter.outcome.persistence.models import Users
 from users.domain.exceptions import UserNotFound
-from users.models import Users
 from users.tests.factories import UserFactory
 
 
