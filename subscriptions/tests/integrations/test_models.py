@@ -4,7 +4,7 @@ from schools.models import Schools
 from schools.tests.factories import SchoolFactory
 from subscriptions.models import Subscriptions
 from subscriptions.tests.factories import SubscriptionFactory
-from users.models import Users
+from users.adapter.outcome.persistence.models import Users
 from users.tests.factories import UserFactory
 
 

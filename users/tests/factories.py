@@ -1,6 +1,6 @@
 import factory
 
-from users.models import Users
+from users.adapter.outcome.persistence.models import Users
 
 
 class UserFactory(factory.django.DjangoModelFactory):
